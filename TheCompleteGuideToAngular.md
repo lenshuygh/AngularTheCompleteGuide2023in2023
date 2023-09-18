@@ -290,6 +290,29 @@ communication between TypeScript file and the Template
     * use property binding to use
 
 
+# TypeScript
+
+### Define a model
+
+inside an angular project's app folder or subfolder of it create a .ts file of the model
+> recipe.model.ts
+
+add properties & constructor
+
+    export class Recipe { 
+        public name: string;
+        public description: string;
+        public imagePath: string;
+    
+        constructor(name: string, description: string, imagePath: string) {
+            this.name = name;
+            this.description = description;
+            this.imagePath = imagePath;
+        }
+    }
+
+the properties are `public` and accompanied by a type
+
 # Bootstrap related
 
 ## install
