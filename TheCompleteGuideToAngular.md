@@ -313,6 +313,11 @@ add properties & constructor
 
 the properties are `public` and accompanied by a type
 
+### Define an array structure
+
+`recipes: Recipe[] = [];`
+
+
 # Bootstrap related
 
 ## install
