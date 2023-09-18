@@ -324,7 +324,15 @@ add properties & constructor
         }
     }
 
-the properties are `public` and accompanied by a type
+- the properties are `public` and accompanied by a type
+
+the shortcut way to do this in TypeScript is
+
+      export class Ingredient {
+        constructor(public name: string, public amount: number) {}
+      }
+
+- properties removed, public moved to arg's and assignments removed
 
 ### Define an array structure
 
