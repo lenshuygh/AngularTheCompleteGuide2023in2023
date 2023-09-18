@@ -53,7 +53,7 @@ source folder of project files
 > > - serves as the root HTML file in which the single page app resides
 > > - contains `<app-root>` tag
 > >   - refers to the `app` component
-> >   - in the app-component's .ts file theres a decorator:`@Component({..)}`
+> >   - in the app-component's .ts file there's a decorator:`@Component({..)}`
 > >   - in side this is the selector that has the `app-root`string that specifies the `selector` `<app-root>` used in the index.html file
 >
 > > **main.ts**
