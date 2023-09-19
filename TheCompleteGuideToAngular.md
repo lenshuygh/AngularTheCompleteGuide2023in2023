@@ -123,6 +123,12 @@ source folder of project files
   - decorator is taken care of
   - registering it in app module is taken care of
   - template and css are assigned
+- creating without a spec.ts file
+  - used to be 
+    - `ng g c <componentName> --spec-false`
+  - is now replaced by
+    - `ng g c <componentName> --skip-tests` 
+  - since _Angular CLI Version 8_ 
 
 ## other ways to reference components in template (.html) files
 
@@ -256,6 +262,24 @@ class="btn btn-primary"
   - eg: `[(ngModel)]="serverName"`
   - the html element's property is passed to the TS file and also to TS property is passed to the template
 
+### Custom property binding
+
+- by default all properties of components are only accessible inside these components
+- when a parent-component needs a property from a child component a decorator can be used
+  - `@Input()`
+    - this decorator can be used in the TS file to indicate passing this property to the parent
+    - `@Input() element: {type : string, name: string, content: string};`
+    - now any component hosting the component can use this
+  - `<app-server-element [element]="serverElement">`
+    - the property `element` can be used to assign something to in the tag `<app-server-element>`
+    - this is done in the parent component's template
+    - because in the `server-element.component.ts` the decorator `@Input()` is used on that property
+  - assigning an alias to use while binding
+    - `@Input('srvrElement')`
+    - `<app-server-element [srvrElement]="serverElement">`
+
+
+
 # Directives
 
 - instructions in the DOM
@@ -337,6 +361,26 @@ the shortcut way to do this in TypeScript is
 ### Define an array structure
 
 `recipes: Recipe[] = [];`
+
+### Define a type ad hoc
+
+`element: {type : string, name: string, content: string};`
+ 
+- here we describe the structure of a variable's type, not the content
+- so `element` is of a type that looks like `{type : string, name: string, content: string}`
+
+### Create simple object with values ad hoc
+
+- here we create a simple JS object with values inside an array
+- `serverElements = [{type: 'server', name: 'TestServer', content: 'Just a test'}];`
+
+# Debugging in Chrome
+
+- open developertools
+- tab: _Sources_
+- in the left section browse
+  >webpack:// > src > app
+  - here a breakpoint can be placed in de the familiar .ts files
 
 # Linting
 
