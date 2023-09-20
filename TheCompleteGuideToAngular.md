@@ -112,7 +112,7 @@ source folder of project files
 - add component to `app.module.ts`
   - register in the AppComponent's `declarations` array (should auto import)
 - use in the `app.component.html
-  - by using it's element-name specified in the decorator of the component's .TS file
+  - by using its element-name specified in the decorator of the component's .TS file
 
 ### create a new component using the CLI
 
@@ -139,6 +139,7 @@ source folder of project files
     - `selector: '[app-servers]'`
   - refer to the component in .html by using it as an attribute in another selector
     - `<div app-service></div>...<div>`
+    - all content placed between opening and closing tags a component are ignored
 
 ### using a class
 
@@ -193,6 +194,48 @@ setTimeout(() => {
 this.allowNewServer = true;
 },2000)
 }`
+    
+# Lifecyclehooks
+
+when angular creates a new component it goes through phases, or _hooks_ for that component
+these can be used to perform actions
+
+**ngOnChanges()**
+
+- executed at start
+- when input prop's change : @Input() receive new values
+
+**ngOnInit()**
+
+- when the component has been initialized
+- before added to the DOM, after basic initialization
+- runs after the constructor
+
+**ngDoCheck()**
+
+- called during every change detection run
+- when anything that could influence the template changes
+- even when nothing changes, this runs on the check itself 
+
+**ngAfterContentInit()**
+
+- called after the content with ngContent has been initialized
+
+**ngAfterContentChecked()**
+
+- after the ngContent is change detected
+
+**ngAfterViewInit()**
+
+- after the component's view (current + child) has been rendered
+
+**ngAfterViewChecked()**
+
+- called every time view and child-views have been checked
+
+**ngOnDestroy()**
+
+- right before the component will be destroyed, like with an `ng-if`
 
 ## Styling
 
@@ -378,6 +421,23 @@ another way would be by using **services**_
       - value = the condition on which it will be added or not
     - `<p [ngClass]="{online: serverStatus === 'online'}">`
     - use property binding to use
+
+
+- **ng-content**
+  - all data between opening and closing tags of a component's selector is normally ignored
+    - in the component's template use `<ng-content> </ng-content>` to indicate this as a place
+    to render the content between the components selector in the parent-component
+      - in the child component
+        - `<div class="panel-body"> <ng-content></ng-content> </div>`
+      - in the parent component
+        
+            <app-server-element>
+              <p>
+                <strong *ngIf="serverElement.type === 'server'" style="color: red">{{ serverElement.content }}</strong>
+                <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
+              </p>
+            </app-server-element>
+
 
 # TypeScript
 
