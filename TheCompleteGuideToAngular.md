@@ -232,7 +232,7 @@ communication between TypeScript file and the Template
 - **Property binding**
 
   - bind an element's property to an expression in the TS file
-  - enclose the poperty in square brackets - `<button
+  - enclose the property in square brackets - `<button
 class="btn btn-primary"
 [disabled]="!allowNewServer"` - `allowNewServer` is a function in the TS file, it's in the constructor so is known/started upon creation
 
@@ -243,7 +243,7 @@ class="btn btn-primary"
 ### From template to TypeScript
 
 - **Event binding**
-  - events are available trough the html element it's placed on
+  - events are available through the html element it's placed on
   - syntax: `(<eventName>)="<methodInTypeScript"`
   - eg: `(click)="onCreateServer()"`
   - to see events from certain elements use `console.log()` to see props and events from elements
@@ -252,6 +252,33 @@ class="btn btn-primary"
   - this is a reserved name in Angular
   - in the TS file's method for the event we use the argument `event: any`
   - eg: `onUpdateServerName(event: any) {...}`
+- **local references**
+  - a local reference can be placed on any HTML element
+  - syntax: `#referenceName`
+  
+  - in the template
+    - `<input type="text" class="form-control" #serverNameInput>`
+    - the reference refers to the element in which it resides
+    - references can be used anywhere in the template
+      - `<button
+        class="btn btn-primary"
+        (click)="onAddServer(serverNameInput)">Add Server</button>`
+      - the whole element is passed to the method now
+  - in the .TS file
+    - the reference references the DOM element from the template
+    - template:
+      - `<input type="text" class="form-control" #serverNameInput>`
+    - in .TS:
+      - `@ViewChild('serverContentInput') serverContentInput: ElementRef;`
+      - `@ViewChild('serverContentInput', {static: false}) serverContentInput: ElementRef;`
+        - the `@ViewChild` is a decorator
+        - when accessing the element in `ngOnInit()`
+          - `@ViewChild('serverContentInput') serverContentInput: ElementRef;`
+          - `{ static: true }` needs to be added for accessing the element in `ngOnInit()` only
+      - the value is accessible trough `nativeElement` on the property
+        - `this.serverContentInput.nativeElement.value`
+      - don't use this to change the element
+        
 
 ### To and from TS and HTML
 
@@ -581,7 +608,28 @@ verification:
 - tab: sources
 - file: styles.css should refer to bootstrap
 
-## From generated project readme
+# Notes concerning current versions
+
+In Angular 8+, the @ViewChild() syntax which you'll see in the next lecture needs to be changed slightly:
+
+Instead of:
+
+`@ViewChild('serverContentInput') serverContentInput: ElementRef;`
+
+use
+
+`@ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;`  
+
+The same change (add `{ static: true }` as a second argument) needs to be applied to ALL usages of `@ViewChild()`  
+(and also `@ContentChild()` which you'll learn about later) IF you plan on accessing the selected element inside of `ngOnInit()`.
+
+If you DON'T access the selected element in ngOnInit (but anywhere else in your component),  
+set `static: false` instead!
+
+If you're using Angular 9+, you only need to add `{ static: true }`  
+(if needed) but not `{ static: false }`.
+
+# From generated project readme
 
 ### Development server
 
