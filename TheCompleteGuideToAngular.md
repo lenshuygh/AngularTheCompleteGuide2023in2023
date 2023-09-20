@@ -262,23 +262,49 @@ class="btn btn-primary"
   - eg: `[(ngModel)]="serverName"`
   - the html element's property is passed to the TS file and also to TS property is passed to the template
 
-### Custom property binding
+### Custom property binding = component communication
 
-- by default all properties of components are only accessible inside these components
+by default all properties of components are only accessible inside these components
+
+
+- making a property bindable from outside, the parent-component using this child can use that property
 - when a parent-component needs a property from a child component a decorator can be used
-  - `@Input()`
-    - this decorator can be used in the TS file to indicate passing this property to the parent
-    - `@Input() element: {type : string, name: string, content: string};`
-    - now any component hosting the component can use this
-  - `<app-server-element [element]="serverElement">`
-    - the property `element` can be used to assign something to in the tag `<app-server-element>`
-    - this is done in the parent component's template
-    - because in the `server-element.component.ts` the decorator `@Input()` is used on that property
-  - assigning an alias to use while binding
-    - `@Input('srvrElement')`
-    - `<app-server-element [srvrElement]="serverElement">`
+  - the child component can expose a property of itself to the hosting component
+    - `@Input()`
+      - this decorator can be used in the TS file to expose this property to the parent
+      - `@Input() element: {type : string, name: string, content: string};`
+      - now any component hosting the component can use this
+    - `<app-server-element [element]="serverElement">`
+      - the property `element` can be used to assign something to in the tag `<app-server-element>`
+      - this is done in the parent component's template
+      - because in the `server-element.component.ts` the decorator `@Input()` is used on that property
+    - assigning an alias to use while binding
+      - `@Input('srvrElement')`
+      - `<app-server-element [srvrElement]="serverElement">`
 
 
+- when a child-component sends an event to a parent-component
+- parent-components can listen to events emitted by the child-component
+  - the child-component will **emit** an event
+    - create as a property on the child component
+      - `@Output() serverCreated = new EventEmitter<{ serverName: string, serverContent: string }>();`
+      - `@Output()` is a decorator
+      - `serverCreated` is an emitter
+    - in the creation of the emitter the payload type is present
+      - the emitter is triggered by a method in the same component
+      - `onAddServer() {
+        this.serverCreated.emit({serverName: this.newServerName, serverContent: this.newServerContent});
+        }`
+      - with `.emit` the emitter is executed
+      - the method above is triggered through the template
+    - in the parent-component the template looks like
+      - `<app-cockpit (serverCreated)="onServerAdded($event)"></app-cockpit>`
+      - `(serverCreated)` is what the child-component emits, this is an event that can be 'listened' to
+      - `onServerAdded($event)` is this component's method we sent it to
+    - aliases are supported like with the previous paragraph
+
+_combining the 2 ways of communication can be used to pass data from child -> parent -> other child  
+another way would be by using **services**_
 
 # Directives
 
