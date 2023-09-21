@@ -200,6 +200,17 @@ this.allowNewServer = true;
 when angular creates a new component it goes through phases, or _hooks_ for that component
 these can be used to perform actions
 
+when using these they need to be implemented by the class, these interfaces are named slightly different
+
+      OnInit
+      OnChanges
+      DoCheck
+      AfterContentInit
+      AfterContentChecked
+      AfterViewInit
+      AfterViewChecked
+      OnDestroy
+
 **ngOnChanges()**
 
 - executed at start
@@ -321,6 +332,7 @@ class="btn btn-primary"
       - the value is accessible trough `nativeElement` on the property
         - `this.serverContentInput.nativeElement.value`
       - don't use this to change the element
+  - use `@ContentChild('contentParagraph') paragraph: ElementRef;` to access references/elements in a ngContent element
         
 
 ### To and from TS and HTML
@@ -688,6 +700,8 @@ set `static: false` instead!
 
 If you're using Angular 9+, you only need to add `{ static: true }`  
 (if needed) but not `{ static: false }`.
+
+**the same applies to _ContentChild()_**
 
 # From generated project readme
 
