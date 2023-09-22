@@ -124,11 +124,11 @@ source folder of project files
   - registering it in app module is taken care of
   - template and css are assigned
 - creating without a spec.ts file
-  - used to be 
+  - used to be
     - ~~`ng g c <componentName> --spec-false`~~
   - is now replaced by
-    - `ng g c <componentName> --skip-tests` 
-  - since _Angular CLI Version 8_ 
+    - `ng g c <componentName> --skip-tests`
+  - since _Angular CLI Version 8_
 
 ## other ways to reference components in template (.html) files
 
@@ -194,7 +194,7 @@ setTimeout(() => {
 this.allowNewServer = true;
 },2000)
 }`
-    
+
 # Lifecyclehooks
 
 when angular creates a new component it goes through phases, or _hooks_ for that component
@@ -226,7 +226,7 @@ when using these they need to be implemented by the class, these interfaces are 
 
 - called during every change detection run
 - when anything that could influence the template changes
-- even when nothing changes, this runs on the check itself 
+- even when nothing changes, this runs on the check itself
 
 **ngAfterContentInit()**
 
@@ -307,16 +307,16 @@ class="btn btn-primary"
   - in the TS file's method for the event we use the argument `event: any`
   - eg: `onUpdateServerName(event: any) {...}`
 - **local references**
+
   - a local reference can be placed on any HTML element
   - syntax: `#referenceName`
-  
   - in the template
     - `<input type="text" class="form-control" #serverNameInput>`
     - the reference refers to the element in which it resides
     - references can be used anywhere in the template
       - `<button
-        class="btn btn-primary"
-        (click)="onAddServer(serverNameInput)">Add Server</button>`
+class="btn btn-primary"
+(click)="onAddServer(serverNameInput)">Add Server</button>`
       - the whole element is passed to the method now
   - in the .TS file
     - the reference references the DOM element from the template
@@ -333,7 +333,6 @@ class="btn btn-primary"
         - `this.serverContentInput.nativeElement.value`
       - don't use this to change the element
   - use `@ContentChild('contentParagraph') paragraph: ElementRef;` to access references/elements in a ngContent element
-        
 
 ### To and from TS and HTML
 
@@ -348,9 +347,9 @@ class="btn btn-primary"
 
 by default all properties of components are only accessible inside these components
 
-
 - making a property bindable from outside, the parent-component using this child can use that property
 - when a parent-component needs a property from a child component a decorator can be used
+
   - the child component can expose a property of itself to the hosting component
     - `@Input()`
       - this decorator can be used in the TS file to expose this property to the parent
@@ -364,7 +363,6 @@ by default all properties of components are only accessible inside these compone
       - `@Input('srvrElement')`
       - `<app-server-element [srvrElement]="serverElement">`
 
-
 - when a child-component sends an event to a parent-component
 - parent-components can listen to events emitted by the child-component
   - the child-component will **emit** an event
@@ -375,8 +373,8 @@ by default all properties of components are only accessible inside these compone
     - in the creation of the emitter the payload type is present
       - the emitter is triggered by a method in the same component
       - `onAddServer() {
-        this.serverCreated.emit({serverName: this.newServerName, serverContent: this.newServerContent});
-        }`
+this.serverCreated.emit({serverName: this.newServerName, serverContent: this.newServerContent});
+}`
       - with `.emit` the emitter is executed
       - the method above is triggered through the template
     - in the parent-component the template looks like
@@ -416,6 +414,7 @@ another way would be by using **services**_
     - the html element is repeated for as many times as there are elements in the array of `servers`
 
 - **Attribute directives**
+
   - look like 'normal' HTML attributes
   - are not marked with a `*`
   - they change only the element on which they are placed
@@ -434,22 +433,20 @@ another way would be by using **services**_
     - `<p [ngClass]="{online: serverStatus === 'online'}">`
     - use property binding to use
 
-
 - **ng-content**
   - all data between opening and closing tags of a component's selector is normally ignored
     - in the component's template use `<ng-content> </ng-content>` to indicate this as a place
-    to render the content between the components selector in the parent-component
+      to render the content between the components selector in the parent-component
       - in the child component
         - `<div class="panel-body"> <ng-content></ng-content> </div>`
       - in the parent component
-        
+
             <app-server-element>
               <p>
                 <strong *ngIf="serverElement.type === 'server'" style="color: red">{{ serverElement.content }}</strong>
                 <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
               </p>
             </app-server-element>
-
 
 # TypeScript
 
@@ -490,7 +487,7 @@ the shortcut way to do this in TypeScript is
 ### Define a type ad hoc
 
 `element: {type : string, name: string, content: string};`
- 
+
 - here we describe the structure of a variable's type, not the content
 - so `element` is of a type that looks like `{type : string, name: string, content: string}`
 
@@ -504,7 +501,7 @@ the shortcut way to do this in TypeScript is
 - open developertools
 - tab: _Sources_
 - in the left section browse
-  >webpack:// > src > app
+  > webpack:// > src > app
   - here a breakpoint can be placed in de the familiar .ts files
 
 # Linting
@@ -690,7 +687,7 @@ Instead of:
 
 use
 
-`@ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;`  
+`@ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;`
 
 The same change (add `{ static: true }` as a second argument) needs to be applied to ALL usages of `@ViewChild()`  
 (and also `@ContentChild()` which you'll learn about later) IF you plan on accessing the selected element inside of `ngOnInit()`.
