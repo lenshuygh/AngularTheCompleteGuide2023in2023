@@ -505,6 +505,27 @@ another way would be by using **services**_
   - the HostListener listens to events
     - `mouseenter` & `mouseleave` are events that are known
 
+- **HostBinding**
+  - `@HostBinding('style.backgroundColor') backgroundColor: string = 'transparent';`
+  - use `@HostListener` to change the property
+    
+        @HostListener('mouseenter') mouseover(eventData: Event) {
+          this.backgroundColor = 'blue';
+        }
+
+  - binds to any property of the element containing the directive
+
+- **adding configurability to custom Directives**
+  - use properties with `@Input()` to make directive configurable
+  - also use defaults for these properties  
+  `@Input()defaultColor: string = 'transparent';`  
+  `@Input()highlightColor: string = 'blue';`
+  - usage
+
+        <p appBetterHighlight [defaultColor]="'yellow'" [highlightColor]="'red'">Style with new directive</p>
+
+  - when defaults don't happen on load move the assignment of them into `ngOnInit()`
+
 # TypeScript
 
 ### Define a model
