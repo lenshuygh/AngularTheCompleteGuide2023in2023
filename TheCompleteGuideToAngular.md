@@ -447,6 +447,63 @@ another way would be by using **services**_
                 <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
               </p>
             </app-server-element>
+- **creating a custom directive CRUDE**
+  - > directiveName.directive.ts
+
+
+  import {Directive, ElementRef, OnInit} from "@angular/core";
+      
+      @Directive({
+        selector: '[appBasicHighlight]'
+      })
+      export class BasicHighlightDirective implements OnInit{
+        constructor(private elementRef: ElementRef) {
+        }
+      
+        ngOnInit() {
+          this.elementRef.nativeElement.style.backgroundColor = 'green';
+        }
+      }
+
+
+  - `@Directive` decorator with a selector
+  - use `[]` in the selector name to use it as _attribute-style_
+    - now it will be recognized when adding the name without the brackets to an element
+  - inject the reference to the element this directive will be used on through constructor injection
+  - do the action on the `OnInit` hook
+  - add the directive to the `declarations`-array in
+    > app.module.ts
+  - use in template as: 
+        
+        <p appBasicHighlight>Style with new directive</p>
+
+- **creating a custom directive BETTER**
+  - create via CLI
+    - `ng generate directive better-directive`
+    - `ng g d better-directive`
+    - files are created, added to `app.module.ts` and selector is specified
+  - use the `renderer` in conjunction to `elementRef`
+    - `constructor(private elRef: ElementRef, private renderer: Renderer2) { }`
+    
+          ngOnInit() {
+            this.renderer.setStyle(this.elRef.nativeElement, 'backgroundColor', 'blue')
+          }
+  - more about the renderer's capabilities https://angular.io/api/core/Renderer2  
+  
+
+- **use @HostListener to add interactivity**
+  - as a method:
+  
+        @HostListener('mouseenter') mouseover(eventData: Event) {
+          this.renderer.setStyle(this.elRef.nativeElement, 'backgroundColor', 'blue');
+        }
+
+        @HostListener('mouseleave') mouseleave(eventData: Event) {
+          this.renderer.setStyle(this.elRef.nativeElement, 'backgroundColor', 'grey');
+        }
+
+  - the HostListener listens to events
+    - `mouseenter` & `mouseleave` are events that are known
 
 # TypeScript
 
@@ -459,15 +516,15 @@ inside an angular project's app folder or subfolder of it create a .ts file of t
 add properties & constructor
 
     export class Recipe {
-        public name: string;
-        public description: string;
-        public imagePath: string;
-
-        constructor(name: string, description: string, imagePath: string) {
-            this.name = name;
-            this.description = description;
-            this.imagePath = imagePath;
-        }
+      public name: string;
+      public description: string;
+      public imagePath: string;
+    
+      constructor(name: string, description: string, imagePath: string) {
+        this.name = name;
+        this.description = description;
+        this.imagePath = imagePath;
+      }
     }
 
 - the properties are `public` and accompanied by a type
