@@ -125,7 +125,7 @@ source folder of project files
   - template and css are assigned
 - creating without a spec.ts file
   - used to be 
-    - `ng g c <componentName> --spec-false`
+    - ~~`ng g c <componentName> --spec-false`~~
   - is now replaced by
     - `ng g c <componentName> --skip-tests` 
   - since _Angular CLI Version 8_ 
