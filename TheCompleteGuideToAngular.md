@@ -616,6 +616,70 @@ another way would be by using **services**_
           <p *ngSwitchDefaultD>Value is Default</p>
         </div>
 
+# Services
+  
+  - to prevent duplicate code over components
+
+  - **create service**
+    - `.ts` : `<serviceName>.service.ts`
+    - add to 
+    > app.module.ts
+    - no decorator for services
+    - services are regular TS classes
+
+
+      export class LoggingService {
+        logStatusChange(status: string) {
+          console.log('A server status changed, new status: ' + status);
+        }
+      }     
+- use trough injection described in _**'Hierarchical Injector'**_ chapter below
+
+- if we need to inject something in a service
+  - the issue is there's no decorator
+  - just add `@Injectable()` as an annotation above `export class <ClassName> {`
+
+   
+      @Injectable()
+      export class AccountsService {
+   
+
+  - add `@Injectable()` 
+    - ~~**_to the service you want to inject into!_**~~
+    - ~~_not to the service you want to inject_~~
+    - **_to all service ! as of current Angular versions_**
+
+# Hierarchical Injector
+
+  - used by eg: services
+  - injects an instance automatically
+  - requesting class needs in constructor
+  - in the `@Component` part we add a section `providers`
+    - here we add an array with the type of the classes to inject
+      - `providers: [LoggingService],`
+  - we inject through the constructor
+    - `constructor(private <instanceName>: ClassWeWantInjected){}`
+    -  TS shortcut: add an accessor in from of the name of the argument -> creates and assigns a property inside the class! 
+
+  - alternative way
+    - using the `inject()` function
+    - no need as arg in constructor
+    - declare in the `providers` section
+      - `providers: [LoggingService],`
+    - make a property like:
+      - `private loggingService?: LoggingService;`
+    - in the constructor body:
+      - `this.loggingService = inject(LoggingService);`
+
+
+- if the parent class has the service and we don't need a new instance in this class, do everyithng as usual just don't add it to `providers`
+  - this way we don't get a new instance, we get the same as the parent class 
+- adding the injectable class to the providers section tells angular that it should make a new instance in this class
+- if we don't want a new instance, don't add it to the providers section
+
+- if the parent component has an injected class, all the child components have the same instance of that class if we just inject but don't provide it
+- to provide it for the whole app we can provide it in the `app.module.ts`
+
 # TypeScript
 
 ### Define a model
