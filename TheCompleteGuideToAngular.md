@@ -526,6 +526,96 @@ another way would be by using **services**_
 
   - when defaults don't happen on load move the assignment of them into `ngOnInit()`
 
+- **naming and aliases**
+  - if the property alias is set to the name of the directive's selector the directive name kan be used as property in the template
+    - when the selector is like `selector: '[appBetterHighlight]'`
+    - and the property we expose is:
+    - `@Input('appBetterHighlight')highlightColor: string = 'blue';`
+    - in the template we can't use the property as
+    
+          <p appBetterHighlight [defaultColor]="'yellow'" [highlightColor]="'red'">Style with better directive</p>
+    
+    - but we can assign the value directly to the directive's name with the name is between `[ ]`
+
+          <p [appBetterHighlight] ="'red'" [defaultColor]="'yellow'">Style with better directive</p>
+
+- **special case concerning passing strings with property binding**
+  - if the square brackets `[ ]` are removed from the property, the single quotes can be removed as well
+    
+        <p appBetterHighlight ="red" defaultColor="yellow">Style with better directive</p>
+
+- **about structural directives**
+  - in Angular there's no `*` like in the structural directives syntax
+  - in Angular there's only:
+    - property binding
+    - event binding
+    - 2-way-binding
+    - string interpolation
+  - `*ngIf` sections can be written as:
+
+
+      <ng-template [ngIf]="!onlyOdd">
+        <div>
+          <li
+            *ngFor="let number of evenNumbers"
+            class="list-group-item"
+            [ngClass]="{odd: number % 2 !== 0}"
+            [ngStyle]="{backgroundColor: number % 2 !== 0 ? 'yellow' : 'transparent'}"
+            >
+            {{ number }}
+          </li>
+        </div>
+      </ng-template>  
+
+
+  - the `*ngIf` syntax is an easier way to do write this  
+
+
+- **create a custom structural directive**
+  - `ng g d unless`
+  - use `@Input()` on a property
+  - we want the property to execute a method, the key to this is the use `set` as in a _**setter**_ with the property
+  - this makes it behave like a method but it's a _**setter**_
+  - we want it to react to when the input/property changes so the setter makes it do that
+  
+
+      export class UnlessDirective {
+        @Input() set unless(condition: boolean) {
+          if (!condition) { } else { }
+        }
+        constructor() {
+        }
+      }
+
+  - as the structural directives are a shortcut to the style as the `<ng-template>..</ng-template>` above
+    - we need access to the element and place in the dom in our custom directive
+    - so we use the constructor to inject the `TemplateRef` and `ViewContainerRef`
+      - `constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef) {}`
+    - these can be used as
+
+
+        @Input('appUnless') set unless(condition: boolean) {
+          if (!condition) {
+            this.viewContainer.createEmbeddedView(this.templateRef);
+          } else {
+            this.viewContainer.clear();
+          }
+        }    
+
+  - notice that the `@Input()` decorator has a alias that is the same name as the directive's selector
+  - this is so we can use it in the template as
+    - `<div *appUnless="onlyOdd">`
+
+
+  - **handy structural directive ngSwitch**
+   
+        <div [ngSwitch]="value">
+          <p *ngSwitchCase="5">Value is 5</p>
+          <p *ngSwitchCase="10">Value is 10</p>
+          <p *ngSwitchCase="100">Value is 100</p>
+          <p *ngSwitchDefaultD>Value is Default</p>
+        </div>
+
 # TypeScript
 
 ### Define a model
