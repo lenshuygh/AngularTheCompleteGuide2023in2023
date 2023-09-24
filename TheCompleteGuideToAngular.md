@@ -553,19 +553,18 @@ another way would be by using **services**_
     - string interpolation
   - `*ngIf` sections can be written as:
 
-
-      <ng-template [ngIf]="!onlyOdd">
-        <div>
-          <li
-            *ngFor="let number of evenNumbers"
-            class="list-group-item"
-            [ngClass]="{odd: number % 2 !== 0}"
-            [ngStyle]="{backgroundColor: number % 2 !== 0 ? 'yellow' : 'transparent'}"
-            >
-            {{ number }}
-          </li>
-        </div>
-      </ng-template>  
+          <ng-template [ngIf]="!onlyOdd">
+            <div>
+              <li
+                *ngFor="let number of evenNumbers"
+                class="list-group-item"
+                [ngClass]="{odd: number % 2 !== 0}"
+                [ngStyle]="{backgroundColor: number % 2 !== 0 ? 'yellow' : 'transparent'}"
+              >
+                {{ number }}
+              </li>
+            </div>
+          </ng-template>  
 
 
   - the `*ngIf` syntax is an easier way to do write this  
@@ -576,31 +575,29 @@ another way would be by using **services**_
   - use `@Input()` on a property
   - we want the property to execute a method, the key to this is the use `set` as in a _**setter**_ with the property
   - this makes it behave like a method but it's a _**setter**_
-  - we want it to react to when the input/property changes so the setter makes it do that
-  
+    - we want it to react to when the input/property changes so the setter makes it do that
 
-      export class UnlessDirective {
-        @Input() set unless(condition: boolean) {
-          if (!condition) { } else { }
-        }
-        constructor() {
-        }
-      }
+          export class UnlessDirective {
+            @Input() set unless(condition: boolean) {
+              if (!condition) { } else { }
+            }
+            constructor() {
+            }
+          }
 
   - as the structural directives are a shortcut to the style as the `<ng-template>..</ng-template>` above
     - we need access to the element and place in the dom in our custom directive
     - so we use the constructor to inject the `TemplateRef` and `ViewContainerRef`
       - `constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef) {}`
-    - these can be used as
+        - these can be used as
 
-
-        @Input('appUnless') set unless(condition: boolean) {
-          if (!condition) {
-            this.viewContainer.createEmbeddedView(this.templateRef);
-          } else {
-            this.viewContainer.clear();
-          }
-        }    
+              @Input('appUnless') set unless(condition: boolean) {
+                if (!condition) {
+                  this.viewContainer.createEmbeddedView(this.templateRef);
+                } else {
+                  this.viewContainer.clear();
+                }
+              }    
 
   - notice that the `@Input()` decorator has a alias that is the same name as the directive's selector
   - this is so we can use it in the template as
@@ -618,36 +615,50 @@ another way would be by using **services**_
 
 # Services
   
+  - to prevent long and complex chains of passing data between components
+
+
   - to prevent duplicate code over components
+
 
   - **create service**
     - `.ts` : `<serviceName>.service.ts`
     - add to 
     > app.module.ts
     - no decorator for services
-    - services are regular TS classes
+      - services are regular TS classes
 
-
-      export class LoggingService {
-        logStatusChange(status: string) {
-          console.log('A server status changed, new status: ' + status);
-        }
-      }     
+            export class LoggingService {
+              logStatusChange(status: string) {
+                console.log('A server status changed, new status: ' + status);
+              }
+            }     
 - use trough injection described in _**'Hierarchical Injector'**_ chapter below
 
 - if we need to inject something in a service
   - the issue is there's no decorator
-  - just add `@Injectable()` as an annotation above `export class <ClassName> {`
-
+    - just add `@Injectable()` as an annotation above `export class <ClassName> {`
    
-      @Injectable()
-      export class AccountsService {
+          @Injectable()
+          export class AccountsService {
    
 
   - add `@Injectable()` 
     - ~~**_to the service you want to inject into!_**~~
     - ~~_not to the service you want to inject_~~
     - **_to all service ! as of current Angular versions_**
+
+
+  - example of using service instead of passing data trough components
+    - in a service declare an emitter
+      - `statusUpdated = new EventEmitter<string>();`
+    - trigger it in a component's method
+      - `this.loggingService.logStatusChange(status);`
+    - react to it in another component by subscribing to the emitter and passing an arrow function
+      
+          accountsService.statusUpdated.subscribe(
+            (status:string) => alert('new status:'+status)
+          );
 
 # Hierarchical Injector
 
@@ -678,7 +689,17 @@ another way would be by using **services**_
 - if we don't want a new instance, don't add it to the providers section
 
 - if the parent component has an injected class, all the child components have the same instance of that class if we just inject but don't provide it
-- to provide it for the whole app we can provide it in the `app.module.ts`
+- to provide it for the whole app we can 
+
+
+- for **_Angular 6+_** to provide application-wide services:
+  - instead of declaration in `providers: [],`
+  - in the class to inject:
+
+        @Injectable({providedIn: 'root'})
+        export class MyService { ... }
+
+  
 
 # TypeScript
 
