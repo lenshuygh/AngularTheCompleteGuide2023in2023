@@ -749,6 +749,14 @@ the shortcut way to do this in TypeScript is
 - here we create a simple JS object with values inside an array
 - `serverElements = [{type: 'server', name: 'TestServer', content: 'Just a test'}];`
 
+# JavaScript
+
+  - when using a service that holds data that is private, when using a getter for this 
+    be sure to return a copy if it is a referenced type (Array , Object)
+    - for an array
+      - `return this.recipes.slice();`
+        - this makes a copy when the getter is used, so we don't sent a ref to the original array
+
 # Debugging in Chrome
 
 - open developertools
