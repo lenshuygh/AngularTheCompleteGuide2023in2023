@@ -699,7 +699,64 @@ another way would be by using **services**_
         @Injectable({providedIn: 'root'})
         export class MyService { ... }
 
+# Routing
+
+- to use different urls for sections in a single page app routing is used
+- the Angular router will translate the url or **route** into displaying the correct page inside the single page application
+
+
+- > app.module.ts
   
+  - add routes constant with an array of routes objects
+  - a route consists of an path and a component
+    - be sure to **not** preface the path with a `/`
+
+          const appRoutes: Routes = [
+            {path: '', component: HomeComponent},
+            {path: 'users', component: UsersComponent},
+            {path: 'servers', component: ServersComponent},
+          ]
+
+  - register the routes
+    - new import: `routermodule` that registers the routes declared as constant
+        
+          imports: [
+            BrowserModule,
+            FormsModule,
+            RouterModule.forRoot(appRoutes)
+          ],
+
+- the routes will be displayed/resolved into `<router-outlet></router-outlet>` in the template
+- use routerLinks in the template for navigation targets 
+  - `<a routerLink="/servers">`
+  or
+  - `<a [routerLink]="['/users']">`
+- by using routerLinks tha app is not reloaded and restarted from zero
+- in routerLinks prepend the url with a `/` to make an absolute path, otherwise it's relative
+- Angular provides a _**routerLinkActive**_ directive
+  - can be added to the wrapping element or the link itself
+  - it will attach the specified class if the current link is active
+  - `routerLinkActive="active"` will attach the css class `active` if the current route is active
+  - all routes active get the class so the route that's empty gets it also
+    to prevent this we use `[routerLinkActiveOptions]` with the option `{exact : true}`
+    
+         <li
+            role="presentation"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact : true}"
+          >
+
+    - this tells Angular : only display the class if this is the **_exact_** path of the route
+     
+
+- router can be used in .TS files
+  - inject the router in the .TS file
+  - use `this.router.navigate()`
+    - this takes an array of strings for paths
+
+          onLoadServers() {
+            this.router.navigate(['/servers']);
+          }
 
 # TypeScript
 
