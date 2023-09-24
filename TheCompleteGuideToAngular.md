@@ -758,6 +758,13 @@ the shortcut way to do this in TypeScript is
         - this makes a copy when the getter is used, so we don't sent a ref to the original array
   - be sure to emit any changes to objects and subscribe to them in the components that use them
 
+
+  - add array to list
+    - with the spread operator `...`
+      - `this.ingredients.push(...newIngredientsToBeAdded);`
+        - by prefacing the array with `...` it will be converted into multiple values
+          this wya the new elements will be pushed onto it as a single value each instead of an array
+
 # Debugging in Chrome
 
 - open developertools
