@@ -756,6 +756,7 @@ the shortcut way to do this in TypeScript is
     - for an array
       - `return this.recipes.slice();`
         - this makes a copy when the getter is used, so we don't sent a ref to the original array
+  - be sure to emit any changes to objects and subscribe to them in the components that use them
 
 # Debugging in Chrome
 
