@@ -834,6 +834,55 @@ another way would be by using **services**_
             this.route.queryParams.subscribe(.....);
             this.route.fragment.subscribe(.....);
 
+### Nested Routing
+  
+  - with **child routes**
+    - by declaring `children`inside the parent route
+    - the path wil be prepended by the parent path
+    
+          {
+            path: 'servers', component: ServersComponent, children: [
+              {path: ':id', component: ServerComponent},
+              {path: ':id/edit', component: EditServerComponent},
+            ]
+          },
+
+    - `router-outlet` can be used again inside the template of the component that is the parent-rout of the child-route
+    - typically the new router-outlet replaces the child-route's selector
+
+    - preserve parameters on child routes
+      - this.router.navigate(['edit'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+        - `relativeTo` specifies what to prepend to this child route
+        - `queryParamsHandling` states what to do with the parent rout's parameters
+          - `'preserve'` passes the same param's as the parent
+          - `'merge'` merges the parent-route's param's with the new param's of the child route
+
+### Redirecting and Wildcard routes
+
+  - **redirecting**
+
+        {path: 'not-found', component: PageNotFoundComponent},
+        {path: 'something', redirectTo: '/not-found'},
+
+  - **wildcard**
+    - be sure that this route that catches all not known is the **_last_** route declared
+
+          {path: 'not-found', component: PageNotFoundComponent},
+          {path: '**', redirectTo: '/not-found'},
+        
+### Path Matching
+
+  - by default Angular matches paths by prefix
+    - `{path: '', redirectTo: '/somewhere-else'}`
+    will match for
+    -  `/recipes`
+    - `/`
+  - as it is so common Angular should give an error
+  - because of the default **prefix**-strategy Angular checks the start of the path
+    - all paths start with `''` so it will match
+  - to remedy this the matching strategy can be changed to `"full"`
+    - `{ path: '', redirectTo: '/somewhere-else', pathMatch: 'full' }`
+
 
 # TypeScript
 
