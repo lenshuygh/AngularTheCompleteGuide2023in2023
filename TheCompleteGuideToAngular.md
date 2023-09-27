@@ -883,6 +883,137 @@ another way would be by using **services**_
   - to remedy this the matching strategy can be changed to `"full"`
     - `{ path: '', redirectTo: '/somewhere-else', pathMatch: 'full' }`
 
+### Outsourcing the Routing
+
+  - typically the routing config is in a separate module `app-routing.module.ts`
+    - unless there's only 1 or 2 routes specified in `app-module.ts`
+    - a `const appRoutes: Routes = [...];` is declared and on the imports of `@NgModule`it's fed into the `RouterModule`
+    - this `RouterModule` needs to be exported in the `exports:`of the `@NgModule` decorator
+    - the new module should be imported in `app.module.ts`
+  - > app-routing.module.ts
+
+          const appRoutes: Routes = [
+            ...routes...
+          ];
+    
+          @NgModule({
+            imports: [
+              RouterModule.forRoot(appRoutes),
+            ],
+              exports: [RouterModule],
+          })
+          
+          export class AppRoutingModule {}
+
+  - > app.module.ts
+  
+        @NgModule({
+          declarations: [...],
+          imports: [
+            BrowserModule,
+            FormsModule,
+            AppRoutingModule,
+          ],
+          providers: [ServersService],
+          bootstrap: [AppComponent]
+          })
+        export class AppModule {
+        }
+
+### Guards (Route Guards)
+  - logic/functionality executed before a route is loaded or before a route is left
+  - _**a guard is a service**_  
+  - Guard services need to be added to the `AppModule` as a provider, like other services
+
+  - **CanActivate Guard**
+    - create a service that implements `CanActivate`
+    - the canActivate can return:
+      - Observable that wraps a boolean, resolves to a true or false
+      - Promise of a boolean
+      - Boolean
+    - it can run async or sync
+    - at the end it returns true or false
+    - to use
+      - in the routes add id as an argument to the route that needs it
+        - `path: 'servers', canActivate: [AuthGuard], component: ServersComponent, children: [`
+        - this will protect parent and child routes
+    - to protect nested routes only
+      - don't just add it to all child routes
+      - do add `CanActivateChild` interface to the guard-service
+      - add the method from that interface named `canActivateChild()`
+        - has the same form as the `CanActivate()` method
+        - in this method call the `CanActivate()` method and pass the arguments from the current method (route and state)
+        - replace `CanActivate` option on the route with `CanActivateChild` followed by the guard-service in an array  
+
+  - **CanDeactivate Guard**
+    - this guard can prevent the user from navigating away from a route
+    - eg: if on an edit page a value is changed but not saved and the user tries to leave this page
+    - added as option on a route 
+      - `path: ':id/edit', component: EditServerComponent, canDeactivate: [CanDeactivateGuard]},`
+
+### Routes and static data
+  - when a page/component is multipurpose and relies on some data being passed to it
+  - on the `ActivatedRoute` there's a data property that can contain data
+    - put data on a route
+      - `{path: 'not-found', component: ErrorPageComponent, data: {message: 'Page not found!!!!'}},`
+    - fetch from the route (ActivatedRoute)
+    
+          constructor(private route: ActivatedRoute) { }
+
+          ngOnInit(): void {
+            this.errorMessage = this.route.snapshot.data['message'];
+          }      
+  
+      or
+
+          constructor(private route: ActivatedRoute) { }
+    
+          ngOnInit(): void {
+              this.route.data.subscribe(
+                (data: Data) => {
+                  this.errorMessage = data['message'];
+                }
+              );
+          }
+
+### Routes and dynamic data
+  - a resolver runs code before displaying the route/ before the component is rendered
+  - create a service that implements Resolve (from @angular/router)
+  - its type is the data it resolves around eg: `{id: number, name: string, status: string}`
+    - can be simplified by using an interface with those properties
+        
+          interface Server {
+            id: number,
+            name: string,
+            status: string
+          }
+          
+          export class ServerResolver implements Resolve<Server> {  
+
+  - the implemented method is `resolve()`
+
+        resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Server> | Promise<Server> | Server {
+          return undefined;
+        }
+
+    - arguments taken is Route & RouterStateSnapshot
+    - returns either
+      - Observable<Server>
+      - Promise<Server>
+      - Server
+    - so the **resolver** returns data
+    - declare in `app.module.ts`
+    - define it in the route
+      - `{path: ':id', component: ServerComponent, resolve: {server: ServerResolver}},`
+        - the key value pair as option defines that the data that the resolver returns is assigned as value to that key
+    - in the route's component handle it as a promise to get the data from the key specified in the route
+
+              
+        ngOnInit() {
+          this.route.data.subscribe(
+            (data: Data) => this.server = data['server']
+          );
+        }   
 
 # TypeScript
 
@@ -931,6 +1062,13 @@ the shortcut way to do this in TypeScript is
 
 - here we create a simple JS object with values inside an array
 - `serverElements = [{type: 'server', name: 'TestServer', content: 'Just a test'}];`
+
+### Casting
+- cast a string to a number
+  - `Number(route.params['id'])`  
+  or
+  - `+route.params['id']`
+
 
 # JavaScript
 
