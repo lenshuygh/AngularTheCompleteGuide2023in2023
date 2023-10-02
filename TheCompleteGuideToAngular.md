@@ -761,7 +761,15 @@ another way would be by using **services**_
   - this can be expanded with options
     - `this.router.navigate(['servers'], {relativeTo: this.route});`
 
+
 - passing data to routes
+
+    - **_be careful with the order of routes or childroutes_** 
+      - **_routes with an argument like :id should be last in the list_**
+      - **_a childroute with a part of the url as 'path' would be mistaken for an arg_**
+        - **_`path :id` before `path: new` would trigger this behaviour_**
+      
+
   - with params in the route
     - `{path: 'users/:id', component: UserComponent},`
       - all data after `users/` in the path is accepted as `id`
@@ -795,44 +803,44 @@ another way would be by using **services**_
                   }
                 );
 
-  - with QueryParams and Fragments
-    - adding these options
-      - in **template**
-        - query params are the parameters after a `?` in URLs
-          - in the template use `QueryParams`
-            `queryParams]="{allowEdit:1}"`
-          - with a *routerLink* of `[routerLink]="['/servers', 5, 'edit']"`  
-            - this produces an URL like: `/servers/5/edit?allowEdit=1`
-        - a fragment is `.....#loading` at the end of the url
-          - can be added with `fragment="'loading'"` in the template
+    - with QueryParams and Fragments
+      - adding these options
+        - in **template**
+          - query params are the parameters after a `?` in URLs
+            - in the template use `QueryParams`
+              `queryParams]="{allowEdit:1}"`
+            - with a *routerLink* of `[routerLink]="['/servers', 5, 'edit']"`  
+              - this produces an URL like: `/servers/5/edit?allowEdit=1`
+          - a fragment is `.....#loading` at the end of the url
+            - can be added with `fragment="'loading'"` in the template
 
-                <a
-                  [routerLink]="['/servers', 5, 'edit']"
-                  [queryParams]="{allowEdit:1}"
-                  fragment="'loading'"
-                  href="#"
-                  class="list-group-item"
-                  *ngFor="let server of servers">
-                  {{ server.name }}
-                </a>
+                  <a
+                    [routerLink]="['/servers', 5, 'edit']"
+                    [queryParams]="{allowEdit:1}"
+                    fragment="'loading'"
+                    href="#"
+                    class="list-group-item"
+                    *ngFor="let server of servers">
+                    {{ server.name }}
+                  </a>
 
-      - **programmatically** in .TS
-        - in template we see
-          - `<button (click)="onLoadServers(1)" class="btn btn-primary">Load Server 1</button>`
-        - in the .TS file with `.navigate`:
-          - `this.router.navigate(['/servers', id, 'edit'], {queryParams: {allowedit: '1'}, fragment: 'loading'});`
+        - **programmatically** in .TS
+          - in template we see
+            - `<button (click)="onLoadServers(1)" class="btn btn-primary">Load Server 1</button>`
+          - in the .TS file with `.navigate`:
+            - `this.router.navigate(['/servers', id, 'edit'], {queryParams: {allowedit: '1'}, fragment: 'loading'});`
 
-    - retrieving options
-      - trough the `ActivatedRoute`
+      - retrieving options
+        - trough the `ActivatedRoute`
 
-            this.route.snapshot.queryParams
-            this.route.snapshot.fragment
+              this.route.snapshot.queryParams
+              this.route.snapshot.fragment
   
-      - these are only updated at creation 
-      - for a more reactive way subscribe on `.queryParams` or `.fragment` as prop's of the route
+        - these are only updated at creation 
+        - for a more reactive way subscribe on `.queryParams` or `.fragment` as prop's of the route
 
-            this.route.queryParams.subscribe(.....);
-            this.route.fragment.subscribe(.....);
+              this.route.queryParams.subscribe(.....);
+              this.route.fragment.subscribe(.....);
 
 ### Nested Routing
   
