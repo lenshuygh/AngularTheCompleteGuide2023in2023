@@ -1015,6 +1015,28 @@ another way would be by using **services**_
           );
         }   
 
+### Location strategies
+
+a live server hosting the SPA needs te be configured to return the index.html when a page not found (404) occurs
+The server navigates first, but when the server doesn't send it to the SPA, the SPA cannot provide error pages for this
+
+**Enable adding hashes to the route**
+> app-routing.module.ts
+
+add config to the RouterModule import ot include`{useHash: true}`
+
+
+    imports: [
+      RouterModule.forRoot(appRoutes, {useHash: true}),
+    ],
+
+now url's look include a `#`
+
+> http://localhost:4200/#/servers
+
+this tells the server it should only mind the URL portion before the `#`  
+so  if the URL includes the `#` it will always be handled by the SPA only the part after the `#` changes
+
 # TypeScript
 
 ### Define a model
