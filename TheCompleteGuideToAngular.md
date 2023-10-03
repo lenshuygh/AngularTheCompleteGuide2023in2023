@@ -36,6 +36,14 @@
 
 - when installing runs into errors
 
+`npm install --save rxjs@6`
+
+- to install RxJS
+
+`npm install --save rxjs-compat`
+
+- to install the rxjs-compat package
+
 ## Project Structure
 
 ### root
@@ -1049,6 +1057,29 @@ now url's look include a `#`
 
 this tells the server it should only mind the URL portion before the `#`  
 so  if the URL includes the `#` it will always be handled by the SPA only the part after the `#` changes
+
+
+# Observables
+observable is a data source
+
+observable pattern:
+  timeline/stream between observable and observer
+  events are present on the stream emitted by observable
+  observer : the subscribe function
+    
+3 ways of handling the data packaging (observer):
+ - handle normal data
+ - handle errors
+ - handle completion of observable
+user code van be executed on these 3
+  
+observable don't _need_ to complete eg: a button's observable
+
+used to handle **_async tasks_**
+  don't know when it will happen or how long it will take
+
+
+
 
 # TypeScript
 
