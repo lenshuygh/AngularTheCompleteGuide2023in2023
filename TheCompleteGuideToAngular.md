@@ -842,6 +842,11 @@ another way would be by using **services**_
               this.route.queryParams.subscribe(.....);
               this.route.fragment.subscribe(.....);
 
+          - about these **_Route Observables_**
+            - this is a built-in observable and the subscription doesn't need to be cleaned up
+            - others that are user-created
+              - **_subscription will need to be cleaned up_**
+
 ### Nested Routing
   
   - with **child routes**
