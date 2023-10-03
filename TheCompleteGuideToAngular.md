@@ -1060,7 +1060,13 @@ so  if the URL includes the `#` it will always be handled by the SPA only the pa
 
 
 # Observables
+not built in in Angular or TS  
+
+provided by RXJS package (cfr `package.json` listed as `"rxjs": "^6.6.3",`)
+
 observable is a data source
+
+observable are constructs to which we subscribe to be informed about data changes
 
 observable pattern:
   timeline/stream between observable and observer
@@ -1078,7 +1084,160 @@ observable don't _need_ to complete eg: a button's observable
 used to handle **_async tasks_**
   don't know when it will happen or how long it will take
 
+### Syntax
 
+**subscribe to an observable**
+  
+    ngOnInit() {
+      this.route.params.subscribe((params: Params) => {
+        this.id = +params.id;
+      });
+    }
+
+  - the observable is `params
+  - `(params: Params)` is the data and type that it emitted by the observable
+  - `in  => {...}` the data is used to handle the changed data
+
+**create an observable**
+  - add import for RXJS
+    - `import {interval} from "rxjs";`
+
+  - `interval` emits an event every x seconds
+
+          ngOnInit() {
+              interval(1000).subscribe(count => {
+                console.log('count: ', count);
+              });
+          }
+
+    - this observable will keep emitting data even when navigating away
+    - creates memmoryleaks
+    - not all observables are like this eg: **_http-requests_**
+
+  - to prevent keeping emitting:
+    - store the subscription in a variable
+      - `this.firstObsSubscription = interval(1000).subscrive(...`
+    - in the ngOnDestroy()) hook unsubscribe from the subscription
+          
+              ngOnDestroy(): void {
+                this.firstObsSubscription.unsubscribe();
+              }
+
+
+  - build a custom observable
+    - import
+      - `import {Observable} from "rxjs";`
+    - create observable 
+
+            const customIntervalObservable = Observable.create(
+              observer => {
+                let count = 0;
+                  setInterval(
+                  () => {
+                    observer.next(count);
+                    count++;
+                }, 1000);
+            });
+
+    - subscribe and handle output from observable    
+
+          this.firstObsSubscription =customIntervalObservable.subscribe(
+            data => {
+              console.log('data: ', data);
+            }
+          );
+
+      - **_errors_** and **_completing_** observables
+        - error handling:
+          - when (and if) observable throws an error the error can be handled in the subscription and the emitting stops
+            - `error` is passed besides the data in the subscription
+
+                  this.firstObsSubscription = customIntervalObservable.subscribe({
+                    next: (data) => {
+                      console.log('data: ', data);
+                    },
+                    error: (error) => {
+                      alert(error.message)
+                    }
+                  });    
+
+
+
+
+
+- completing
+  - in the observable it the same as error to trigger/declare:
+    
+        if(count === 2){
+          observer.complete();
+        }
+
+
+  - in the subscribe:
+
+        this.firstObsSubscription = customIntervalObservable.subscribe({
+            next: (data) => {
+              console.log('data: ', data);
+            },
+            error: (error) => {
+              alert(error.message)
+            },
+            complete: () => {
+              console.log('complete');
+            }
+          }
+        );
+
+**Operators**
+  - we 'listen' to data from the observable
+  - can be done in subscription
+  - for complex logic with the emitted data use operators
+  - with built-in operators we can subscribe to the operators
+    - `pipe()`
+    - `map()` (imported as  `import {map} from "rxjs/operators";`)
+      - `pipe()` takes the emitted data and feeds it into whatever is between its `()`
+      - and in `pipe()`we use operators (can be multiple, just separated by `,`, executed one after another)
+        - like `map()` which is a mapper
+          - in `map()` the data can be transformed
+    - after the `pipe()` closes we do `.subscribe()`to handle the transformed data
+    
+          customIntervalObservable.pipe(map((data: number) => {
+            return 'Round: ' + (data + 1);
+          })).subscribe(
+            (data) => {
+              console.log('data: ' + data)
+            }
+          );
+
+      - another operator that's useful is `filter()`
+        - only passes data that meets its condition that resolves as a boolean
+          
+              filter(
+                  (data: number) => {
+                    return (data % 2 === 0);
+                  }
+                ),
+
+
+  **Subjects**
+   - replaces an EventEmitter
+   - imported from RXJS
+     - `import {Subject} from "rxjs";`
+   - same syntax as EventEmitter
+     - `activatedSubject = new Subject<boolean>();`
+   - we tell the subscription to perform a `next()` and pass in data
+     - `this.userService.activatedSubject.next(true);`
+   - we can subscribe to it and handle the data
+     
+          this.userService.activatedSubject.subscribe(
+            didActivate => {
+              this.userActivated = didActivate;
+            }
+          )
+
+
+
+  - use **Subject** over _Emitters_
 
 
 # TypeScript
