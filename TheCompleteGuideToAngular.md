@@ -1248,6 +1248,191 @@ used to handle **_async tasks_**
     - RxJS Series: https://academind.com/learn/javascript/understanding-rxjs/
     - Updating to RxJS 6: https://academind.com/learn/javascript/rxjs-6-what-changed/
 
+
+# Forms
+
+  - 2 approaches for handling forms
+    - template driven: angular infers Form Objects from the DOM
+    - reactive: structure is defined in TS, manually structure connect to HTML
+
+  - Angular handles the data, so no submit action of the from itself, on the `<form>`tag
+  - because no HTTP requests is sent out to a server, it stays withing Angular
+
+### Template Driven Forms
+
+  - Angular creates a JS object representing the form for us
+
+> app.module.ts
+    
+- add FormsModule import (from @angular/forms)
+  - `import { FormsModule } from '@angular/forms';`
+- Angular doesn't detect input elements
+  - because it doesn't know which inputs are controls
+- adding controls
+  - add ngModel to the element without the `[]`
+    - now Angular is told this input is a control of the form
+  - add `name="<controlName>"` to the element 
+    - so the control can be used in TS
+  
+          <input
+            class="form-control"
+            id="username"
+            type="text"
+            ngModel
+            name="username"
+          >
+
+    - or
+
+          <select
+            class="form-control"
+            id="secret"
+            ngModel
+            name="secret"
+          >
+
+  - how to call `onSubmit()`
+    - to place it on the html element button of type 'submit' is not good because
+      - this is linked to the form it is in
+      - submits a specific event 
+        - a request
+    - Angular has a solution
+      - place `(ngSubmit)` on the form tag
+        - `<form (ngSubmit)="onSubmit()">`
+        - now the submit-typed button can be used inside a form
+    -  get access to the form
+      - place a local reference on the form element and pass it along with the `ngSubmit()` method
+      - the local element looks weird as in:`#f="ngForm"`
+        `<form (ngSubmit)="onSubmit(f)" #f="ngForm">`
+        - use ViewChild to access without sending it with the method, viewChild as prop of the TS file 
+          - `@ViewChild('f') signupForm: NgForm;`
+        - in TS the passed argument is of type `NgForm`
+        
+                onSubmit(ref: NgForm) {
+                  console.log('ref: ', ref);
+                }    
+
+    - the NgForm type payload in TS
+      - contains handy properties like
+        - property `dirty`means if the form is untouched or not
+        - property `valid` when using validators
+        - property `touched` if it was clicked on/in
+      - contains the values
+        - with `ref.value.<controlName>`
+        
+              this.user.username = this.signupForm.value.userData.username;
+              this.user.email = this.signupForm.value.userData.email;
+
+
+- validation
+  - `required` and `email` can be added to html elements
+    - these are available in TS now on `NgForm`
+      - the form's `valid`property is now handy in TS
+
+            <input
+              class="form-control"
+              id="email"
+              type="email"
+              ngModel
+              name="email"
+              required
+              email>  
+
+
+  - validators present in Angular
+    - for reactive forms
+      - https://angular.io/api/forms/Validators
+    - directives for template driven forms
+      - https://angular.io/api?type=directive
+
+  - in the forms there are classes added and removed dynamically
+    - ng-invalid
+    - ng-valid
+    - ng-dirty
+  - these can be used to specify CSS
+    - `input.ng-invalid, select.ng-invalid { border: 1px solid red; }`
+      - will indicate inputs that are not valid visually
+    - the form's `valid`property can be used to disable the submit button
+      - `[disabled]="!f.valid"`
+        - because of the property `[disabled]`
+      - to prevent starting the new form with warnings about validity
+        
+              input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
+                border: 1px solid red;
+              }
+
+      - to display validity info on specific elements, with a local ref we can refer to the element's control in another element
+        
+              <input
+                  class="form-control"
+                  id="email"
+                  type="email"
+                  ngModel
+                  name="email"
+                  required
+                  email
+                  #email="ngModel"
+                >
+                <span class="help-block" *ngIf="!email.valid && email.touched">
+                  Please enter a valid email</span>   
+
+
+  - use defaults in form elements with `[ngModel]`
+    - `[ngModel]="defaultQuestion"` used as one-way-property binding
+      - `defaultQuestion` is a string property in the TS file
+  - to have instant checking , not after submitting
+    - `[(ngModel)]="answer"` 2 way binding is still available
+  - grouping data/inputs
+    - validation can be done per-group
+    - can be done by a wrapping div with `ngModelGroup`
+      - `<div id="user-data" ngModelGroup="userData">`
+        - the name is a subdivision in the ngForm's value
+        - now there's a sub-control with that name too in the ngForm's controls
+        - local ref can be used also
+          - `<div id="user-data" ngModelGroup="userData" #userData="ngModelGroup">`
+          - `<p *ngIf="!userData.valid && userData.touched">`
+  - working with radio buttons
+    - array of values in TS
+    
+          <label>
+              <input
+                type="radio"
+                name="gender"
+                ngModel
+                [value]="gender"
+                >{{ gender}}
+          </label>
+
+  
+  - populate inputs with the TS file
+    - the `signupForm` is present trough `@ViewChild()..` in the TS file
+      - with `setValue()` we can set the value of the **whole** form
+      
+               this.signupForm.setValue({
+                userData: {
+                  username: suggestedName,
+                  email: ''
+                },
+                secret: 'pet',
+                questionAnswer: '',
+                gender: 'male'
+              });     
+
+    - better to use `patchValue` on the `form` property of the form in TS
+      - this can set specific controls iso the whole form
+  
+             this.signupForm.form.patchValue(
+               {userData: {
+                 username: suggestedName
+                 }}
+             );
+
+  - resetting a form
+    - use `reset()`
+      - `this.signupForm.reset();`
+      - pass object like in `patchValue()`to reset specific controls
+      - all properties of controls are reset also (dirty etc.)
+
 # TypeScript
 
 ### Define a model
