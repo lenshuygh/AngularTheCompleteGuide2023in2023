@@ -1237,8 +1237,10 @@ used to handle **_async tasks_**
 
 
 
-  - use **Subject** over _Emitters_
-
+  - use **Subjects** over _EventEmitters_ if working **_cross-component_** trough a service
+    - observable operators can be used
+    - one should unsubscribe from a subscription like an observable
+    - **_only_** for cross-component events, use EventEmitters when `@Output()` is needed
 
 # TypeScript
 
