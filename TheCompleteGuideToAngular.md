@@ -1242,6 +1242,12 @@ used to handle **_async tasks_**
     - one should unsubscribe from a subscription like an observable
     - **_only_** for cross-component events, use EventEmitters when `@Output()` is needed
 
+  
+  - links for Observables & RXJS
+    - Official Docs: https://rxjs-dev.firebaseapp.com/
+    - RxJS Series: https://academind.com/learn/javascript/understanding-rxjs/
+    - Updating to RxJS 6: https://academind.com/learn/javascript/rxjs-6-what-changed/
+
 # TypeScript
 
 ### Define a model
