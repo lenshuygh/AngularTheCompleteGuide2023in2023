@@ -1433,6 +1433,154 @@ used to handle **_async tasks_**
       - pass object like in `patchValue()`to reset specific controls
       - all properties of controls are reset also (dirty etc.)
 
+### Reactive Forms
+
+- the form is created programmatically, in the TS code
+- this doesn't mean 'from scratch' entirely
+
+  - import FormGroup in the component
+    - `import {FormGroup} from "@angular/forms";`
+  - add property of type FormGroup
+    - `signupForm: FormGroup;`
+      - this will hold the form
+  - import ReactiveForms module in app module
+    
+          @NgModule({
+            declarations: [
+            AppComponent
+            ],
+            imports: [
+            BrowserModule,
+            FormsModule,
+            ReactiveFormsModule,
+            ],
+            providers: [],
+            bootstrap: [AppComponent]
+          })
+
+  - create the form in TS and connect to the HTML elements
+    - FormGroup needs to be initialized , best in `OnInit()`
+      
+          ngOnInit(): void {
+              this.signupForm = new FormGroup<any>({});
+          }
+    - in the FormGroup arguments we define controls as JS objects
+       - inside a new control a default can be set, and a validator, and a async validator 
+
+              this.signupForm = new FormGroup<any>({
+                'username': new FormControl(null),
+                'email': new FormControl(null),
+                'gender': new FormControl('male'),
+              });        
+    - link template to the FormGroup
+      - HTML form property binding with `<form [formGroup]="signupForm">`
+      - input element
+        - add directive `formControlName'`and ref the TS control
+          - can be done with property binding as `[formControlName]="'username'"` <- notice the single quotes as we're referencing a string ISO a prop
+          
+                  <input
+                    class="form-control"
+                    formControlName="username"
+                    id="username"
+                    type="text"
+                  >
+    - submit with ngSubmit
+      - `<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">`
+      - in TS the form and its data is available through the property of type FormGroup
+
+    - validation
+      - in the control
+        - besides the default value , the 2nd arg can be a validator
+          - some `Validators` are provided
+            - `'username': new FormControl(null, Validators.required),`
+          - array if multiple
+            - `'email': new FormControl(null, [Validators.required, Validators.email]),`
+      - template and validation status
+        - `*ngIf="!signupForm.get('username').valid && signupForm.get('username').touched"`
+          - signupForm is a prop so available
+            - `.get()` can be used to get a control by control-name
+          - classes `touched` and `valid` are also again available on the elements so with css classes it can be decorated
+
+    - grouping
+      - declare `FormGroup` 
+        - van be bested, here the parent is also a FromGroup
+  
+              this.signupForm = new FormGroup({
+                'userData': new FormGroup({
+                  'username': new FormControl(null, Validators.required),
+                  'email': new FormControl(null, [Validators.required, Validators.email])
+                }),
+                'gender': new FormControl('male'),
+              });
+
+      - in the template it also needs to be linked with a grouping
+        - `<div formGroupName="userData">`
+          - and the name is added
+      - in template the path to the control's added classes needs to be updated if inside a formgroup
+        - `*ngIf="!signupForm.get('userData.username').valid && signupForm.get('userData.username').touched"`
+
+    - dynamically add controls
+      - in TS provide a place to hold and add controls to
+        - `hobbies': new FormArray([])`
+          - this is in the FromGroup, and is an empty array we can add to
+      - add in TS on action (there's a cast to `FormArray` in here !!)
+      
+              onAddHobby(){
+                const control = new FormControl(null, Validators.required);
+                (<FormArray>this.signupForm.get('hobbies')).push(control);
+              }
+
+      - in HTML template
+
+              <div formArrayName="hobbies">
+                <h4>Your hobbies</h4>
+                <button
+                (click)="onAddHobby()"
+                class="btn btn-default"
+                type="button"
+                >Add Hobby
+                </button>
+                  <div *ngFor="let hobbyControl of getControls(); let i = index "
+                       class="form-group">
+                    <input type="text" class="form-control" [formControlName]="i">
+              </div>
+
+
+  - old way for looping trough controls
+    - `*ngFor="let hobbyControl of signupForm.get('hobbies').controls; let i = index"`
+      - won't work in recent Angular versions
+    - can be done by outsourcing the getting to the TS
+      - `getControls() { return (<FormArray>this.signupForm.get('hobbies')).controls; }`
+      - template:
+        - `*ngFor="let hobbyControl of getControls(); let i = index"`
+    - or with a getter
+      - `get controls() { return (this.signupForm.get('hobbies') as FormArray).controls; }`
+      - template:
+        - `*ngFor="let hobbyControl of controls; let i = index"`
+
+
+- custom validators
+  - validators are functions
+    - pass in a value of type `Formcontrol`
+    - it has a type of `{[s: string]: boolean}`
+      - a string as key  and a boolean as value
+      - inside JS object
+    - return true if condition is met
+    - return `null` is not valid, **_NOT FALSE_**
+    - in this validator we check if the value is in a certain array, if not the `ìndexOf()` returns `-1`
+    - and the key value pair is returned
+
+            forbiddenNames(control: FormControl): { [s: string]: boolean } {
+                if (this.forbiddenUserNames.indexOf(control.value) !== -1) {
+                  return {'nameIsForbidden': true};
+                } else {
+                  return null;
+                }
+            }
+
+  - usage in the control
+    - `'username': new FormControl(null, [Validators.required, this.forbiddenNames.bind(this)]),`
+      - `.bind(this)`because of the `this` inside the function 
 # TypeScript
 
 ### Define a model
