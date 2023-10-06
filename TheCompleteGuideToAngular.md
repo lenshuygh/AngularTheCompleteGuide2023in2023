@@ -1490,7 +1490,7 @@ used to handle **_async tasks_**
 
     - validation
       - in the control
-        - besides the default value , the 2nd arg can be a validator
+        - besides the default value , the 2nd arg can be validators, the 3rd  _async_ validators
           - some `Validators` are provided
             - `'username': new FormControl(null, Validators.required),`
           - array if multiple
@@ -1580,7 +1580,63 @@ used to handle **_async tasks_**
 
   - usage in the control
     - `'username': new FormControl(null, [Validators.required, this.forbiddenNames.bind(this)]),`
-      - `.bind(this)`because of the `this` inside the function 
+      - `.bind(this)`because of the `this` inside the function
+
+- async validator
+  - returns a `Promise` or an `Observable`
+    
+        forbiddenEmails(control: FormControl): Promise<any> | Observable<any> {
+          return new Promise<any>(
+            (resolve, reject) => {
+              setTimeout(() => {
+                if (control.value === 'test@test.com') {
+                  resolve({'emailIsFobidden': true});
+                } else {
+                  resolve(null);
+                }
+              }, 1500);
+            }
+          );
+        }
+
+
+
+  - usage as arg after normal validators
+    - `'email': new FormControl(null, [Validators.required, Validators.email],[this.forbiddenEmails])`
+
+- tracking the form and each control
+  - status changes and value changes can be tracked
+  - value (can also be on individual controls)
+    
+            this.signupForm.valueChanges.subscribe(
+              (value) => console.log(value)
+            );
+
+  - status (can also track individual controls)
+
+          this.signupForm.statusChanges.subscribe(
+            (status) => console.log(status)
+          );         
+
+- set and patch values on a form
+  - setValue takes an object representing the form and controls
+  
+        this.signupForm.setValue({
+          'userData' : {
+            'username': 'Lens',
+            'email' : 'lens@test.be'
+          },
+          'gender' : 'male',
+          'hobbies' : [],
+        });
+  - patchValue can take single elements to set the value of
+  
+          this.signupForm.patchValue({'gender':'female'});
+
+  - resetting also works on reactive forms
+      
+         this.signupForm.reset();
+
 # TypeScript
 
 ### Define a model
