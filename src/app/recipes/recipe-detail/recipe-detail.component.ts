@@ -11,6 +11,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 })
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
+  recipeId: number;
 
   constructor(
     private recipeService: RecipeService,
@@ -20,7 +21,8 @@ export class RecipeDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params: Params) => {
-      this.recipe = this.recipeService.getRecipeByIndex(Number(params['id']));
+      this.recipeId = Number(params['id']);
+      this.recipe = this.recipeService.getRecipeByIndex(this.recipeId);
     });
   }
 
@@ -31,5 +33,10 @@ export class RecipeDetailComponent implements OnInit {
   onEditRecipe() {
     this.router.navigate(['edit'], { relativeTo: this.activatedRoute });
     // this.router.navigate(['../',this.id,'edit'],{relativeTo: this.activatedRoute});
+  }
+
+  onDeleteRecipe() {
+    this.recipeService.deleteRecipe(this.recipeId);
+    this.router.navigate(['/recipes']);
   }
 }
