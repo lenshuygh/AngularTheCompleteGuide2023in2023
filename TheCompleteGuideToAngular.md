@@ -1345,6 +1345,10 @@ used to handle **_async tasks_**
     - directives for template driven forms
       - https://angular.io/api?type=directive
 
+  - pattern validator
+    - `[pattern]="'^[1-9]+[0-9]*$'"` or `pattern="^[1-9]+[0-9]*$"`
+      - takes a regular expression in this case only positive numbers greater than 0
+
   - in the forms there are classes added and removed dynamically
     - ng-invalid
     - ng-valid
