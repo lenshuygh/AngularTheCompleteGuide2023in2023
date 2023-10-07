@@ -3,8 +3,8 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="recipeForm">
       <div class="row">
         <div class="col-xs-12">
-          <button class="button btn btn-success" type="submit" [disabled]="!recipeForm.valid">Save</button>
-          <button class="btn btn-warning" type="button" (click)="onCancel()">Cancel</button>
+          <button [disabled]="!recipeForm.valid" class="button btn btn-success" type="submit">Save</button>
+          <button (click)="onCancel()" class="btn btn-warning" type="button">Cancel</button>
         </div>
       </div>
       <div class="row">
@@ -25,11 +25,11 @@
           <div class="form-group">
             <label for="imagePath">ImageUrl</label>
             <input
+              #imagePath
               class="form-control"
               formControlName="imagePath"
               id="imagePath"
               type="text"
-              #imagePath
             >
           </div>
         </div>
@@ -70,13 +70,13 @@
               <input class="form-control" formControlName="amount" type="number">
             </div>
             <div class="col-xs-2">
-              <button type="button" class="btn btn-danger" (click)="onDeleteIngredient(i)">X</button>
+              <button (click)="onDeleteIngredient(i)" class="btn btn-danger" type="button">X</button>
             </div>
           </div>
           <hr>
           <div class="row">
             <div class="col-xs-12">
-              <button type="button" class="btn btn-success" (click)="onAddIngredient()">Add Ingredient</button>
+              <button (click)="onAddIngredient()" class="btn btn-success" type="button">Add Ingredient</button>
             </div>
           </div>
 
