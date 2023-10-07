@@ -1641,6 +1641,80 @@ used to handle **_async tasks_**
       
          this.signupForm.reset();
 
+
+# Pipes
+  - transform data at display time, that data itself isn't changed
+  - there's built-in pipes and custom pipes
+
+
+### usage
+- with a pipe `|` after the data, but between curly braces
+  - `{{ server.instanceType | uppercase}}`
+    - this transforms text preceding the pipe sign to uppercase
+  - `{{ server.started | date}}`
+    - the date pipe renders the time more pretty as a date
+- some pipes can be configured
+  - by adding a colon `:`
+  - and the param(s) (additional param's are separated by colons `:`)
+    - `{{ server.started | date: 'fullDate'}}`
+- look at https://angular.io/api?query=pipe for info on built-in pipes, configuration etc.
+- **_pipes can be combined_**
+  - is applied form left to right
+  - keep order in mind, some types can't be transformed by some pipes
+    - `{{ server.started | date: 'fullDate' | uppercase}}`
+
+### custompipes
+
+- create a file like `shorten.pipe.ts` in the root folder
+- best implements method `PipeTransform`
+- always needs to return something
+- needs the `@Pipe` decorator that takes a JS object with `name:`and the name to be used in the template
+  - `@Pipe({name : 'shorten'})`
+- add the pipe to `app.module.ts'` declarations
+
+
+      import {Pipe, PipeTransform} from "@angular/core";
+      
+      @Pipe({name : 'shorten'})
+        export class ShortenPipe implements PipeTransform {
+          transform(value: any, ...args: any[]): any {
+            return value.substring(0, 10);
+          }
+      }
+  
+- add user defined options
+  - in the pipe's implemented transform method options/args can be used
+    - `transform(value: any,limit: number): any {`
+      - use that arg in the logic of the pipe
+    - in the template specify is as an options to the pipe used
+      - `{{ server.name |shorten: 5 }}</strong>`
+
+- CLI can make a pipe
+  - `ng generate pipe filter`   
+  or 
+  - `ng g p filter`
+        
+
+- pipes can be used for reducing/filtering data
+  - `<li *ngFor="let server of servers | filter:filteredStatus:'status'"`
+    - here `filteredStatus` is a changing string passed to the filter and the propname is tha property on the element of the array that gets checked against that string
+
+- **_pipes on data don't run again automatically when the data changes_**
+  - this is called `pure`
+  - in the pipe's decorator you can set `pure: false` (= an `ìnpure` pipe)
+  - **_this is a performance risk_**
+
+        @Pipe({
+          name: 'filter',
+          pure: false
+        })
+        export class FilterPipe implements PipeTransform {
+
+
+- Async pipe
+  - async data, data that isn't there at first, it's not resolved or present
+  - the pipe `async` wits before displaying the data
+
 # TypeScript
 
 ### Define a model
