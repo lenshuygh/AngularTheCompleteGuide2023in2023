@@ -654,7 +654,9 @@ another way would be by using **services**_
   - add `@Injectable()` 
     - ~~**_to the service you want to inject into!_**~~
     - ~~_not to the service you want to inject_~~
-    - **_to all service ! as of current Angular versions_**
+    - **_to all services ! as of current Angular versions_**
+      - with object `{providedIn: 'root'}`
+        - now no need to declare in `app.module.ts` or in a component
 
 
   - example of using service instead of passing data trough components
@@ -1193,7 +1195,7 @@ used to handle **_async tasks_**
   - can be done in subscription
   - for complex logic with the emitted data use operators
   - with built-in operators we can subscribe to the operators
-    - `pipe()`
+    - `pipe()` -> _funnels observable data trough multiple operators_
     - `map()` (imported as  `import {map} from "rxjs/operators";`)
       - `pipe()` takes the emitted data and feeds it into whatever is between its `()`
       - and in `pipe()`we use operators (can be multiple, just separated by `,`, executed one after another)
@@ -1714,6 +1716,80 @@ used to handle **_async tasks_**
 - Async pipe
   - async data, data that isn't there at first, it's not resolved or present
   - the pipe `async` wits before displaying the data
+
+
+# HTTP
+  - anatomy of an HTTP Request
+    - URL / API Endpoint
+    - HTTP Verb
+    - Request Headers / MetaData
+    - Request Body
+
+  - add HttpClientModule to imports in `app.module.ts`
+    - import from `@angular/common/http`
+  - inject as service in component
+    - use `httpClient.post()` to send data
+    - if there's no subscription on the request it wil not be sent
+    - `POST` returns an observable
+      - one must subscribe to it , otherwise it won't even be sent
+      
+            onCreatePost(postData: { title: string; content: string }) {
+              this.http.post(
+                <api-address-as-string>,
+                postData
+              ).subscribe(
+                responseData => console.log(responseData)
+              );
+            }
+
+
+  - transform data received
+    - with `pipe()` the data received can be funneled trough operators that change/handle the data
+    
+          private fetchPost() {
+            this.http.get('https://ng-complete-guide-77d70-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
+              .pipe(
+                map(
+                  response => {
+                    const postArray = [];
+                    for (const key in response) {
+                      if (response.hasOwnProperty(key)) {
+                        postArray.push({...response[key], id: key})
+                      }
+                    }
+                    return postArray;
+                  }
+                )
+              )
+              .subscribe(
+                response => console.log('response: ', response)
+              )
+          }
+
+      - with `.pipe()` the data is mapped, returns an observable again so it can be subscribed upon
+      - the type can be assigned so type: Any isn't there so much
+        - the JS object describes an object with a string as key and a value of type `Post`
+      
+                  map(
+                    (response: { [key: string]: Post }) => {
+                      const postArray: Post[] = [];
+                      ...
+
+      - because the `get()` request and all other requests is generic a type can be set so the data handled is typed
+        - the body type of the response is set on the HTTP method
+          - `this.http.get<{[key: string]: Post}>('https://`
+          or
+          - `this.http.post<{name: string}>(`
+        - so there isn't any need for type specification in the following operations
+
+  - using a loading indicator
+    - prop on TS indicating it is loading (boolean)
+    - set default to false
+    - set to true when handling subscription data
+    - use `*ngIf` in template to display loading text
+
+
+
 
 # TypeScript
 
