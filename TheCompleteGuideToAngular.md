@@ -1220,6 +1220,16 @@ used to handle **_async tasks_**
                   }
                 ),
 
+      - `tap()`
+        - the tap operator enables us to execute code without altering the response or data
+        - with a subscription
+          - use it to do something with the data without altering the data
+
+                  ).pipe(
+                    tap(event => {
+                        console.log('event: ', event)
+                      }
+                    )
 
   **Subjects**
    - replaces an EventEmitter
@@ -1605,8 +1615,6 @@ used to handle **_async tasks_**
           );
         }
 
-
-
   - usage as arg after normal validators
     - `'email': new FormControl(null, [Validators.required, Validators.email],[this.forbiddenEmails])`
 
@@ -1674,15 +1682,14 @@ used to handle **_async tasks_**
   - `@Pipe({name : 'shorten'})`
 - add the pipe to `app.module.ts'` declarations
 
-
-      import {Pipe, PipeTransform} from "@angular/core";
-      
-      @Pipe({name : 'shorten'})
-        export class ShortenPipe implements PipeTransform {
-          transform(value: any, ...args: any[]): any {
-            return value.substring(0, 10);
-          }
-      }
+        import {Pipe, PipeTransform} from "@angular/core";
+        
+        @Pipe({name : 'shorten'})
+          export class ShortenPipe implements PipeTransform {
+            transform(value: any, ...args: any[]): any {
+              return value.substring(0, 10);
+            }
+        }
   
 - add user defined options
   - in the pipe's implemented transform method options/args can be used
@@ -1789,7 +1796,175 @@ used to handle **_async tasks_**
     - use `*ngIf` in template to display loading text
 
 
+  - delete
 
+            this.postService.deletePosts().subscribe(() => {
+              this.loadedPosts = [];
+              }
+            )
+
+
+  - **_errors_**
+    - error handling
+      - the subscribe function has a second argument for handling errors from the subscription
+        
+                  this.isFetching = true;
+                    this.postService.fetchPosts().subscribe(
+                      (response) => {
+                        this.isFetching = false;
+                        this.loadedPosts = response;
+                      },
+                      error => {
+                        this.error = error.message;
+                      }
+                    );            
+
+      - when it's about a request that's not subscribed to in the TS file
+        - create a subject in the service where the call is done
+          - `error = new Subject<string>();`
+          - take the subscriptions error arg to trigger the subject
+                  
+                    this.httpClient.post<{ name: string }>(
+                      'https://ng-complete-guide-77d70-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+                      postData
+                    ).subscribe(
+                      responseData => console.log(responseData),
+                      error => this.error.next(error.message())
+                    );   
+        
+          - now subscribe to that error where the call is used to display it if failed
+            - `this.errorSubscription = this.postService.error.subscribe((errorMsg) => {
+              this.error = errorMsg;
+              })`          
+
+      - the `catchError`-operator
+        - helps in handling errors
+        - imported from `rxjs/operators`
+        - if the data is piped already, and there's an error this operator can be used
+          - usage (needs to be returned so it can be subscribed to)
+            - add as element in the pipe
+
+                    .pipe(
+                      map(
+                        (response) => {
+                          const postArray: Post[] = [];
+                          for (const key in response) {
+                            if (response.hasOwnProperty(key)) {
+                              postArray.push({...response[key], id: key})
+                            }
+                          }
+                          return postArray;
+                        }
+                      ),
+                      catchError(error => {
+                        // generic error handling operations
+                        return error;
+                      })
+                    )
+            - use `throwError` from `rxjs`
+              - this function yields an observable by wrapping an error
+              - use the catchError's data to feed that observable
+
+                      .pipe(
+                        map(
+                          (response) => {
+                            const postArray: Post[] = [];
+                            for (const key in response) {
+                              if (response.hasOwnProperty(key)) {
+                                postArray.push({...response[key], id: key})
+                              }
+                            }
+                            return postArray;
+                          }
+                        ),
+                        catchError(errResponse => {
+                          // generic error handling operations
+                          return throwError(errResponse);
+                        })
+                      )
+
+  - **Headers**
+    - setting headers
+      - any http method has an argument to configure that request, after the URL
+      - inside this the `HttpHeaders` can be configured
+        - imported from `"@angular/common/http"`
+        
+              ('https://ng-complete-guide-77d70-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+              {
+                headers: new HttpHeaders(
+                  {'CustomHeader': 'Hello'}
+                )
+              })
+              .pipe(````
+
+        - this will produces a header on the call
+
+  - **Paramters**
+    - setting parameters on the HTPP call (can also be set at the end of the URL itself)
+      - trough `HttpParams` 
+        - imported from `"@angular/common/http"`
+        - also used in the arguments of a request, besides eg. _headers_
+        - works not quite the same, no arg in `new HttpParams` but a method :`set()` 
+        - the `.set()` takes 2 args, a key and a value
+        
+              ('https://ng-complete-guide-77d70-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+              {
+                headers: new HttpHeaders(
+                  {'CustomHeader': 'Hello'}
+                ),
+                params: new HttpParams().set(
+                  'print','pretty'
+                )
+              })
+              .pipe(
+
+        - multiple parameters
+          - define a variable (not constant) of with new object of `HttpParams`
+          - `.append()` to it with keys and values
+          - be careful: the append method will not change the var, it will return it with the appended data
+            - so it needs to be assigned again
+
+                  let searchParams = new HttpParams();
+                  searchParams = searchParams.append('print', 'pretty');
+                  searchParams = searchParams.append('custom', 'key');    
+
+            - set params to that that var in the options of the request
+              - `params: searchParams`
+
+- **response headers**
+  - beside the data there's more to a response
+  - it is possible to handle the whole object instead of only the data it contains
+  - options are available to set like Headers and Parameters on the request
+    - eg: `observe: 'response'`
+      - the whole response iso the data is observed as return of this request
+
+                      postData,
+                      {
+                        observe: 'response'
+                      }
+                    ).subscribe(
+
+      - whole response is returned, so following data handling needs to start with this as the base
+        - use `.tap()` to check the data without altering the response or data
+        - the event's properties contains very specific data of the type etc of the response
+          - eg: check if the event is of type 'response', only then there's a body available
+
+                     return this.httpClient.delete(
+                        '<URL>',
+                        {
+                          observe: 'events'
+                        }
+                      ).pipe(
+                        tap(event => {
+                            console.log('event: ', event);
+                            if (event.type === HttpEventType.Response) {
+                              console.log('body: ', event.body);
+                            }
+                          }
+                        )
+                      );
+            
+    - the ResponseType can also be configured        
 
 # TypeScript
 
