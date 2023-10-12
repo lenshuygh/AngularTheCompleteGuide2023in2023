@@ -1964,7 +1964,101 @@ used to handle **_async tasks_**
                         )
                       );
             
-    - the ResponseType can also be configured        
+    - the ResponseType can also be configured
+        
+              return this.httpClient.delete(
+                        '<URL>',
+                        {
+                          observe: 'events',
+                          responseType: 'json'
+                        }
+                      ).pipe(
+
+      - parsed and converted to a JS object
+        - can be
+          - `'text'`
+          - `'blob'`
+          - `'json'` = default
+
+- **interceptors**
+  - for eg. adding authorization
+  - create a new file that is a service
+  - implements `HttpIntercepter` interface from `@angular/common/http`
+  - the intercept method that needs to be implemented
+    - arg's are
+      - HttpRequest
+      - HttpHandler
+        - function that forwards the request
+    - allows us to run code before the request is sent
+    - ends with `return next.handle(req);`
+      - this lets the request continue
+    
+            intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+              console.log('Request is on its way');
+              return next.handle(req);
+            }
+
+    - the interceptor needs to be provided as:
+      - element in the `providers` array of `app.module.ts`
+      - this element is a JS object with 3 key-value pairs
+        - first pair: key is `provide` with value `HTTP_INTERCEPTORS`
+        - second pair: key is `useClass` with value referring to the interceptor service
+        - third pair
+          - this is when there are more than 1 interceptor
+            - if there's more than 1 they will replace each other
+            - remedy this by setting `multi`with a value of `true`
+              
+                    imports: [BrowserModule, FormsModule, HttpClientModule, HttpClientModule],
+                    providers: [{
+                      provide: HTTP_INTERCEPTORS,
+                      useClass: AuthInterceptorService,
+                      multi: true
+                    }],
+                    bootstrap: [AppComponent]
+
+    - to modify a request
+      - the `HttpRequest` is immutable so a new one needs to be made
+        - clone the request and pass a JS object that has all the properties
+        - pass the modified req back
+
+                intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+                    console.log('Request is on its way');
+                    const modifiedReq = req.clone({headers: req.headers.append('Auth', 'xyz')})
+                    return next.handle(modifiedReq);
+                }
+
+    - interceptors can be used the handle responses data also
+    
+              intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+                  console.log('Request is on its way');
+                  const modifiedReq = req.clone({headers: req.headers.append('Auth', 'xyz')})
+                  return next.handle(modifiedReq).pipe(
+                    tap(event => {
+                      console.log('Event received -> ', event);
+                      if (event.type === HttpEventType.Response) {
+                        console.log('Event response body: ', event.body);
+                      }
+                    })
+                  );
+              }
+      
+    - multiple interceptors
+      - the order in which they are provided is important, below the auth header wouldn't be logged if the order of interceptors was reversed
+      - in `app.module.ts`
+        
+            providers: [
+                {
+                  provide: HTTP_INTERCEPTORS,
+                  useClass: AuthInterceptorService,
+                  multi: true
+                },{
+                  provide: HTTP_INTERCEPTORS,
+                  useClass: LoggingInterceptorService,
+                  multi: true
+                },
+            ],
+
+
 
 # TypeScript
 
