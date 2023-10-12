@@ -1726,6 +1726,9 @@ used to handle **_async tasks_**
 
 
 # HTTP
+  - more at https://angular.io/guide/understanding-communicating-with-http
+
+
   - anatomy of an HTTP Request
     - URL / API Endpoint
     - HTTP Verb
