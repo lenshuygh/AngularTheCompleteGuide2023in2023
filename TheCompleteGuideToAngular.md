@@ -2117,6 +2117,16 @@ the shortcut way to do this in TypeScript is
   or
   - `+route.params['id']`
 
+## copy object properties
+- with the spread operator `...`
+  - copies all properties into current object
+  
+                return {
+                  ...recipe,
+                  ingredients: recipe.ingredients ? recipe.ingredients : [],
+                };
+
+  - this returns an object with all recipe properties but if the `ingredients` property isn't present we provide an empty array
 
 # JavaScript
 
