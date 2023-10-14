@@ -26,13 +26,7 @@ export class DataStorageService {
   }
 
   fetchRecipes() {
-    return this.authService.user.pipe(
-      take(1),
-      exhaustMap(user => {
-        return this.httpClient.get<Recipe[]>(this.url, {
-          params: new HttpParams().set('auth', user.token),
-        });
-      }),
+    return this.httpClient.get<Recipe[]>(this.url).pipe(
       map(recipes => {
         return recipes.map(recipe => {
           return {
