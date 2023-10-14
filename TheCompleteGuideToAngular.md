@@ -1243,6 +1243,46 @@ used to handle **_async tasks_**
           - then unsubscribes because we don't need updates on that user subject
           - when we need it again we take it, 1 time and unsubscribe because the method was called again
           
+      - `exhaustMap()`
+        - used to chan actions on observables
+        - it combines observables
+        - it waits for the first observable it is after to complete
+        - then it takes that result as a function : `() => {}` so the data of the first observable
+        - returns a new observable that replaces the previous, finished observable
+          - this new observable is the one that is placed in the exhaustMap's function, inside `{}`
+
+                fetchRecipes() {
+                  return this.authService.user.pipe(
+                    take(1),
+                    exhaustMap(user => {
+                      return this.httpClient.get<Recipe[]>(this.url, {
+                        params: new HttpParams().set('auth', user.token),
+                      });
+                    }),
+                    map(recipes => {
+                      return recipes.map(recipe => {
+                        return {
+                          ...recipe,
+                          ingredients: recipe.ingredients ? recipe.ingredients : [],
+                        };
+                      });
+                    }),
+                    tap(recipes => {
+                      this.recipeService.setRecipes(recipes);
+                    })
+                  );
+                }
+
+            - first observable is `user` start a `pipe()` to handle its data
+            - we `take()` the data and the result is a `user` object
+            - that result is used in the `exhaustMap()`'s function
+            - the function contains the HTTP request-observable
+            - in this observable we use the `user` object's data in the headers
+            - the result of the request-observable is passed down in the current pipe to the next operator
+            - next operator is the `mpa()` , this receives the `request`'s data
+              - this is because the `exhaustMap()` operator replaces the previous observable and replaces is with the observable in it's function
+              - in this case it is the HttpRequest-observable, so that observables data is passed to the `map()`
+              
 
   **Subjects**
    - replaces an EventEmitter
@@ -1942,7 +1982,7 @@ used to handle **_async tasks_**
               .pipe(
 
         - multiple parameters
-          - define a variable (not constant) of with new object of `HttpParams`
+          - define a variable (not constant) with new object of `HttpParams`
           - `.append()` to it with keys and values
           - be careful: the append method will not change the var, it will return it with the appended data
             - so it needs to be assigned again
@@ -1951,7 +1991,7 @@ used to handle **_async tasks_**
                   searchParams = searchParams.append('print', 'pretty');
                   searchParams = searchParams.append('custom', 'key');    
 
-            - set params to that that var in the options of the request
+            - set the params key's value to that new var in the options of the request
               - `params: searchParams`
 
 - **response headers**
@@ -2094,6 +2134,7 @@ used to handle **_async tasks_**
 
 - a session is of no use for SPA's -> Stored on server, doesn't care about our client running in browser
 
+- trough http request's and responses we ge a token, this token can be used in subsequent requests to be authenticated and make authenticated requests
 
 
 # TypeScript
