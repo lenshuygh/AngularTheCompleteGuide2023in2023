@@ -2150,6 +2150,12 @@ used to handle **_async tasks_**
     `JSON.parse(localStorage.getItem('userData'));`
   - data as string needs to parsed to use as object , is returned as object literal
 
+- **removing data**
+  - `localStorage.clear()`
+    - removes all data
+  - `localStorage.removeItem('userData');` 
+    - removes specific data
+
 # TypeScript
 
 ### Define a model
