@@ -2062,6 +2062,19 @@ used to handle **_async tasks_**
             ],
 
 
+# Authentication
+- client and server
+  - user/client enters credentials
+  - sent to server to validate, can't happen in browser because it is exposed
+  - server validates, if ok, server will send a token (JWT)
+    - is an encoded string
+    - client receives this
+      - is attached to all requests to the server for authentication
+      - server validates the token for the requests
+
+- a session is of no use for SPA's -> Stored on server, doesn't care about our client running in browser
+
+
 
 # TypeScript
 
