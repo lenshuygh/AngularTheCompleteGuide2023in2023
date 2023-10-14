@@ -2137,6 +2137,19 @@ used to handle **_async tasks_**
 - trough http request's and responses we ge a token, this token can be used in subsequent requests to be authenticated and make authenticated requests
 
 
+#  Storage
+
+### use localStorage of the browser to persist users/tokens
+- **save data**
+
+  `localStorage.setItem('userData', JSON.stringify(user));`    
+  - data needs to be a string -> `JSON.stringify()`
+
+- **retrieve data**
+
+    `JSON.parse(localStorage.getItem('userData'));`
+  - data as string needs to parsed to use as object , is returned as object literal
+
 # TypeScript
 
 ### Define a model
