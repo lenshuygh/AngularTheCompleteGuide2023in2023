@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { RecipeService } from '../recipes/recipe.service';
 import { environment } from '../../environment';
 import { Recipe } from '../recipes/recipe.model';
-import { map, tap } from 'rxjs/operators';
+import { map, take, tap } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,8 @@ export class DataStorageService {
 
   constructor(
     private httpClient: HttpClient,
-    private recipeService: RecipeService
+    private recipeService: RecipeService,
+    private authService: AuthService
   ) {}
 
   storeRecipes() {
@@ -24,6 +26,7 @@ export class DataStorageService {
   }
 
   fetchRecipes() {
+    this.authService.user.pipe(take(1)).subscribe(user => {});
     return this.httpClient.get<Recipe[]>(this.url).pipe(
       map(recipes => {
         return recipes.map(recipe => {

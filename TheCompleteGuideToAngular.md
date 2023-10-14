@@ -1230,6 +1230,19 @@ used to handle **_async tasks_**
                         console.log('event: ', event)
                       }
                     )
+      - `take()`
+        - the take operator _takes_ takes a number as argument
+        - take takes that configured number times a value of the observable
+        - unsubscribes from the observable when it has done _taking_
+        - so if the arg is `1` it only takes the observables value `1` time and then unsubscribes
+        
+                fetchRecipes() {
+                  this.authService.user.pipe(take(1)).subscribe(...);
+
+          - this gets the user when the method `fetchRecipes()` is called 
+          - then unsubscribes because we don't need updates on that user subject
+          - when we need it again we take it, 1 time and unsubscribe because the method was called again
+          
 
   **Subjects**
    - replaces an EventEmitter
@@ -1246,6 +1259,13 @@ used to handle **_async tasks_**
               this.userActivated = didActivate;
             }
           )
+
+  **BehaviorSubject**
+  - a type of subject
+  - gives subscribers immediate access to the subject's previous value
+  - needs to be initialized upon creation, usually with null
+    - `user = new BehaviorSubject<User>(null);`
+
 
 
 
