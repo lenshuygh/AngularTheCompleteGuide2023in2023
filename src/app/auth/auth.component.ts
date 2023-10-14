@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs';
 export class AuthComponent implements OnDestroy {
   isLoginMode = false;
   authSubscription: Subscription;
+  isLoading = false;
+  error: string = null;
 
   constructor(private authService: AuthService) {}
 
@@ -24,16 +26,21 @@ export class AuthComponent implements OnDestroy {
     }
     const email = form.value.email;
     const password = form.value.password;
+    this.isLoading = true;
     if (this.isLoginMode) {
+      // ...
     } else {
       this.authSubscription = this.authService
         .signup(email, password)
         .subscribe(
           resData => {
             console.log('resData: ', resData);
+            this.isLoading = false;
           },
           error => {
             console.log('error: ', error);
+            this.error = 'An error occurred!';
+            this.isLoading = false;
           }
         );
     }
