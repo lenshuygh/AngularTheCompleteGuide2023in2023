@@ -2228,7 +2228,16 @@ used to handle **_async tasks_**
                   AlertComponent
                 ]
 
-        - 
+        - use `.instance` on the ref to get access to the component's properties and set them
+                
+                const alertComponentRef = hostViewContainerRef.createComponent(
+                  alertComponentComponentFactory
+                );
+                alertComponentRef.instance.message = message;
+                this.closeSub = alertComponentRef.instance.close.subscribe(() => {
+                  this.closeSub.unsubscribe();
+                  hostViewContainerRef.clear();
+                });
 
 # TypeScript
 

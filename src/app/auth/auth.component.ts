@@ -21,6 +21,7 @@ export class AuthComponent implements OnDestroy {
   authSubscription: Subscription;
   isLoading = false;
   error: string = null;
+  closeSub: Subscription;
 
   @ViewChild(PlaceholderDirective, { static: false })
   alertHost: PlaceholderDirective;
@@ -66,6 +67,9 @@ export class AuthComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     //this.authSubscription.unsubscribe();
+    if (this.closeSub) {
+      this.closeSub.unsubscribe();
+    }
   }
 
   onHandleError() {
@@ -77,6 +81,13 @@ export class AuthComponent implements OnDestroy {
       this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
     const hostViewContainerRef = this.alertHost.viewContainerRef;
     hostViewContainerRef.clear();
-    hostViewContainerRef.createComponent(alertComponentComponentFactory);
+    const alertComponentRef = hostViewContainerRef.createComponent(
+      alertComponentComponentFactory
+    );
+    alertComponentRef.instance.message = message;
+    this.closeSub = alertComponentRef.instance.close.subscribe(() => {
+      this.closeSub.unsubscribe();
+      hostViewContainerRef.clear();
+    });
   }
 }
