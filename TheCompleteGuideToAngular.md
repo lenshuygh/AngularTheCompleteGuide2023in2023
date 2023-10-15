@@ -2333,6 +2333,31 @@ used to handle **_async tasks_**
               })
             export class AppRoutingModule {}
 
+### Services & Modules
+
+if not provided in root with `@Injectable()` ( = root injector)
+  - service in AppModule
+    - service is available app wide
+      - one instance (root injector)
+      - **_this should be default !_**    
+      
+
+  - service in Component
+    - service available in component tree
+      - instance for each component tree (component specific injector)
+      - **_use if service only relevant for this component tree_**
+
+
+  - service in eagerly loaded module
+    - service available app wide
+      - one instance (root injector)
+      - **_this should be avoided !_**
+      
+
+  - service in lazily loaded module
+    - service available in loaded module
+      - gets its own instance (child injector)
+      - **_use only if the service should be scoped to the loaded module only_**
 
 # TypeScript
 
