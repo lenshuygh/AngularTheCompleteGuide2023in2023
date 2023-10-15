@@ -11,18 +11,19 @@ import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { SharedModule } from './shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CoreModule } from './core.module';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, AuthComponent],
+  declarations: [AppComponent, HeaderComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     HttpClientModule,
+    AppRoutingModule,
     RecipesModule,
     ShoppingListModule,
-    FormsModule,
     SharedModule,
     CoreModule,
+    AuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
