@@ -2147,8 +2147,8 @@ used to handle **_async tasks_**
     - if authenticated it returns true
     - if not it routes with urlTree
     
-
               return this.authService.user.pipe(
+                take(1),
                 map(user => {
                   //return !!user;
                   const isAuth = !!user;
