@@ -2160,6 +2160,8 @@ used to handle **_async tasks_**
                 })
               );
 
+- more on JWT https://jwt.io/
+
 #  Storage
 
 ### use localStorage of the browser to persist users/tokens
@@ -2178,6 +2180,15 @@ used to handle **_async tasks_**
     - removes all data
   - `localStorage.removeItem('userData');` 
     - removes specific data
+
+
+# Dynamic components
+
+  - components created at runtime
+  - loaded on demand/programmatically -> `*ngIf`
+  - can be destroyed?
+  - loaded only programmatically -> without using `*ngIf`
+    -  
 
 # TypeScript
 
