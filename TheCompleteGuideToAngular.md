@@ -1960,9 +1960,9 @@ used to handle **_async tasks_**
               })
               .pipe(````
 
-        - this will produces a header on the call
+        - this will add the header on the call
 
-  - **Paramters**
+  - **Parameters**
     - setting parameters on the HTPP call (can also be set at the end of the URL itself)
       - trough `HttpParams` 
         - imported from `"@angular/common/http"`
@@ -2290,6 +2290,37 @@ used to handle **_async tasks_**
   - move providers array contents from app module to core module
     - no need to export them, because them is services
   - import core module in app module
+
+# Lazy loading
+  - when an app split into multiple modules it is possible to do lazy loading
+  - eg there's 3 main routes
+    - `/` -> AppModule/CoreModule
+    - `/products` -> ProductsModule
+    - `/admin` -> AdminModule
+  - we only want to load what we need
+    - other modules are not loaded unless needed
+
+### how
+
+  - prerequisite
+    - the feature module needs its own routes
+  - remove base path from split routing modules
+  - add to main app routing module as new path
+    - don't a component
+    - add with loadChildren
+    
+           {
+             path: 'recipes',
+             loadChildren: () =>
+             import('./recipes/recipes.module').then(module => module.RecipesModule),
+            },
+
+    - now the whole module is only loaded upon using that route  
+    - be sure to have no imports in app module that suppose to be in the sub module
+    - the path change is: the main routes have that part now so that that router can handle it
+    - the module that is being lazy loaded needs to be removed from import declarations in `app.module.ts`
+    
+
 
 # TypeScript
 
