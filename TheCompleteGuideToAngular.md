@@ -2320,6 +2320,18 @@ used to handle **_async tasks_**
     - the path change is: the main routes have that part now so that that router can handle it
     - the module that is being lazy loaded needs to be removed from import declarations in `app.module.ts`
     
+### preloading
+
+  - the downside of lazy loading is a slight delay of the lazy loaded parts
+  - a preloading strategy can be set on the app-router module as an argument in `RouterModule.forRoot()`
+    
+            @NgModule({
+                imports: [
+                  RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules }),
+                ],
+                exports: [RouterModule],
+              })
+            export class AppRoutingModule {}
 
 
 # TypeScript
