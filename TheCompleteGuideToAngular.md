@@ -2136,6 +2136,29 @@ used to handle **_async tasks_**
 
 - trough http request's and responses we ge a token, this token can be used in subsequent requests to be authenticated and make authenticated requests
 
+- prevent using routes unauthorized with a guard
+  - the guard returns true is authenticated, if a user is present if it works with a user that's there when authenticated and null when not
+  - in `app-routing.module.ts`
+    - protect a path
+      - add the guard as an element to the array describing a path
+        - `{path: 'recipes', component: RecipesComponent, canActivate: [AuthGuard], children: [`
+  
+  - redirecting on not authenticated
+    - if authenticated it returns true
+    - if not it routes with urlTree
+    
+
+              return this.authService.user.pipe(
+                map(user => {
+                  //return !!user;
+                  const isAuth = !!user;
+                  if (isAuth) {
+                    return true;
+                  } else {
+                    return this.router.createUrlTree(['/auth']);
+                  }
+                })
+              );
 
 #  Storage
 
