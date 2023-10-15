@@ -2285,7 +2285,11 @@ used to handle **_async tasks_**
 
 ### Core module
 
-  - 
+  - to make tha app module leaner
+  - services can be moved out of the app.module into the core module (if not using `@Injectable({providedIn: root})`)
+  - move providers array contents from app module to core module
+    - no need to export them, because them is services
+  - import core module in app module
 
 # TypeScript
 
