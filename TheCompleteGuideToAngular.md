@@ -2188,7 +2188,47 @@ used to handle **_async tasks_**
   - loaded on demand/programmatically -> `*ngIf`
   - can be destroyed?
   - loaded only programmatically -> without using `*ngIf`
-    -  
+    - we need a place in the template to display the component
+      - ViewContainerRef
+      - make a directive to help with this and add to `app.module.ts`
+        
+                  @Directive({
+                    selector: '[appPlaceHolder]',
+                  })
+                  export class PlaceholderDirective {
+                    constructor(public viewContainerRef: ViewContainerRef) {}
+                  }
+
+      - use ng-template with the directive in the template
+        - `<ng-template appPlaceHolder></ng-template>`
+
+    - import component in TS file where it is needed, it is not in the template with the selector
+    - trigger a method in the TS file when to display the component
+    - in the method
+      - use ComponentFactory, inject ComponentFactoryResolver
+      - get the place in template where it needs to be displayed by using a `@ViewChild()` property in the TS
+        - `@ViewChild(PlaceholderDirective, { static: false }) alertHost: PlaceholderDirective;`
+        - and use `this.alertHost.viewContainerRef;`in the method displaying the needed component
+        - get the ref with code a bove
+        - clear it
+        - use component factory to create and display
+      
+                    private showErrorAlert(message: string) {
+                      const alertComponentComponentFactory =
+                        this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+                      const hostViewContainerRef = this.alertHost.viewContainerRef;
+                      hostViewContainerRef.clear();
+                      hostViewContainerRef.createComponent(alertComponentComponentFactory);
+                  }
+
+        - for older Angular versions the new component needs to be declared in `app.module.ts` in the entryComponents array
+          
+                bootstrap: [AppComponent],
+                entryComponents: [
+                  AlertComponent
+                ]
+
+        - 
 
 # TypeScript
 
