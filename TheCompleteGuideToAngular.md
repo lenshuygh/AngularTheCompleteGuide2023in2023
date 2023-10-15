@@ -2241,6 +2241,39 @@ used to handle **_async tasks_**
 
     - more on this https://angular.io/guide/dynamic-component-loader
 
+
+# Modules
+
+  - an Angular app needs at least one module
+  - modules work on its own by default
+    - there's no communication between them
+    - you can export a from a module and import it in another one: cfr. `app-routing.module`
+  - leaner code if split in different modules
+  - more contained code if split into modules
+
+  - create
+        
+            @NgModule()
+            export class RecipesModule {}
+
+  - split up modules
+    - move to declarations array of new module
+    - add these also to export array
+    - make imports of needed modules (CommonModule for NgFor!, BrowserModule is only allowed in main comp)
+
+  - move relevant routes into the new module and it's own routing-module
+  - the relevant main and childroutes are in the new module, the'll be referenced into it but reside in its own routing-module
+      - create new `@NgModule` file for childRoutes
+      - const of type Routes with al separated routes (under file imports, before `@NgModule` decorator)
+      - in decorator imports and exports
+            
+              @NgModule({
+                imports: [RouterModule.forRoot(appRoutes)],
+                exports: [RouterModule],
+                })
+              export class AppRoutingModule {}
+      - import the new routing module into the new module by declaring it in the imports array
+
 # TypeScript
 
 ### Define a model
