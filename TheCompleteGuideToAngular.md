@@ -2239,6 +2239,8 @@ used to handle **_async tasks_**
                   hostViewContainerRef.clear();
                 });
 
+    - more on this https://angular.io/guide/dynamic-component-loader
+
 # TypeScript
 
 ### Define a model
