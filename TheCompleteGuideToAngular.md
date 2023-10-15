@@ -2243,6 +2243,8 @@ used to handle **_async tasks_**
 
 
 # Modules
+  - **_components and directives can only be declared in 1 module !!!!_**
+
 
   - an Angular app needs at least one module
   - modules work on its own by default
@@ -2273,6 +2275,17 @@ used to handle **_async tasks_**
                 })
               export class AppRoutingModule {}
       - import the new routing module into the new module by declaring it in the imports array
+
+### Shared modules
+
+  - contain modules or elements that other modules need
+  - they need to be exported in this module to use them in other modules
+    - this differs from other new modules, they didn't need to export IF the routes that needed components     
+      were also separated from the main app into the split modules
+
+### Core module
+
+  - 
 
 # TypeScript
 
