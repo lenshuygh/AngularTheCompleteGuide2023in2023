@@ -2406,7 +2406,15 @@ if not provided in root with `@Injectable()` ( = root injector)
     `ng build`
   - this used to be 
     `ng build --prod`
-  - 
+  - produces a `DIST` folder containing
+    - projectname named folder contains
+      - all assets and files
+
+  ### deployment
+  - need a static website host
+    - eg: 
+      - AWS S3
+      - Firebase (does this besides the backend)
 
 # TypeScript
 
