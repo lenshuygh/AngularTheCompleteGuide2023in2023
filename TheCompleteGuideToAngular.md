@@ -2438,6 +2438,8 @@ if not provided in root with `@Injectable()` ( = root injector)
         - returns the URL of the app   
           https://angular-project-hosted.web.app/auth
         
+### fix routing after deployment 
+https://academind.com/tutorials/angular-q-a#how-to-fix-broken-routes-after-deployment
 
 # TypeScript
 
