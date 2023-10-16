@@ -2368,6 +2368,46 @@ if not provided in root with `@Injectable()` ( = root injector)
   - https://angular.io/guide/ngmodules
 
 
+# Deployment
+
+  - use & check environment variables
+  - polish & test code
+  - build for prod
+    - takes all TS compiles to JS
+    - bundles all code together
+    - translate to angular
+    - bundle & optimize size
+  
+    `ng build --prod`
+
+  - deploy build artifacts to static host
+    - webesrver capable of serving
+      - HTML
+      - JS
+      - Angular
+
+  ### environment variable
+  `ng generate environments`
+  - environments folder
+    - environments.ts
+    - environments.development.ts
+      - these file contain boolean for environment const 
+        `export const environment = { production: true };`
+
+      - in these files production/development specific values can be set eg: endpoints and API keys
+      - import into components
+        `import { environment } from '../../environments/environment';`
+        - this will be managed automatically when the production is set to true or false and then points to the correct file
+        `environment.<key_Name_in_env_file>` 
+        - can now be used in TS files that import it
+        - 
+  ### build for prod
+  - building for production is done by using
+    `ng build`
+  - this used to be 
+    `ng build --prod`
+  - 
+
 # TypeScript
 
 ### Define a model
