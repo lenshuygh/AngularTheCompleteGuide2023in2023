@@ -2415,6 +2415,29 @@ if not provided in root with `@Injectable()` ( = root injector)
     - eg: 
       - AWS S3
       - Firebase (does this besides the backend)
+         
+    - Firebase
+      - use firebase CLI, instructions on website
+       
+        `npm install -g firebase-tools`
+       
+        `firebase login`
+      
+        `firebase init`
+        - links proj to firebase
+        - choose HOSTING when asked
+        - choose existing your project to host
+        - public folder/dir -> the folder in dist
+          `dist/course-project`
+        - configure as single-page app (rewrite all url's to /index.html)? -> `Y `
+        - setup automatic builds and deploys using github? -> `N`
+        - File dist/course-project/index.html already exists. overwrite? -> `N`
+        
+        `firebase deploy`
+        
+        - returns the URL of the app   
+          https://angular-project-hosted.web.app/auth
+        
 
 # TypeScript
 
