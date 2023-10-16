@@ -2359,6 +2359,15 @@ if not provided in root with `@Injectable()` ( = root injector)
       - gets its own instance (child injector)
       - **_use only if the service should be scoped to the loaded module only_**
 
+### be care full when providing a service in lazy loaded modules and not in app module!
+### be care full when providing a service in a module that is imported in another one , also when lazy loading a module that contains it!
+
+
+- more info 
+  - https://angular.io/guide/ngmodule-faq
+  - https://angular.io/guide/ngmodules
+
+
 # TypeScript
 
 ### Define a model

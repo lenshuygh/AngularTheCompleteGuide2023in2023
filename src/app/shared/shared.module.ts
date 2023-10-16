@@ -4,6 +4,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component';
 import { AlertComponent } from './alert/alert.component';
 import { PlaceholderDirective } from './placeholder.directive';
 import { CommonModule } from '@angular/common';
+import { LoggingService } from '../logging.service';
 
 @NgModule({
   declarations: [
@@ -20,5 +21,6 @@ import { CommonModule } from '@angular/common';
     PlaceholderDirective,
     CommonModule,
   ],
+  // providers: [LoggingService],
 })
 export class SharedModule {}
