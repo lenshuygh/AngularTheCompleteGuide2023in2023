@@ -2441,6 +2441,136 @@ if not provided in root with `@Injectable()` ( = root injector)
 ### fix routing after deployment 
 https://academind.com/tutorials/angular-q-a#how-to-fix-broken-routes-after-deployment
 
+
+# Standalone Components / Directives
+
+  - don't need to be declared in a module
+  - can be mixed with the standard/old way
+  - decoupled from `NgModule`
+  - standalone components can import modules
+
+
+### How
+
+  - in the @Component decorator a property is added
+    
+          @Component({
+              standalone: true,
+              selector: 'app-details',
+              templateUrl: './details.component.html',
+              styleUrls: ['./details.component.css'],
+          })
+
+  - not declared int `app.module.ts`
+  - most be imported in other component (must be standalone) in decorator options as an import 
+
+          @Component({
+            standalone: true,
+            imports: [DetailsComponent],
+            selector: 'app-welcome',
+            templateUrl: './welcome.component.html'
+          })
+
+  OR
+
+  - if the standalone component is needed in components that are in a module
+  - import it into the module
+
+            @NgModule({
+                declarations: [AppComponent, WelcomeComponent],
+                imports: [BrowserModule, SharedModule, DetailsComponent],
+                providers: [],
+                bootstrap: [AppComponent],
+            })
+            export class AppModule {
+            }
+
+
+### Make AppComponent standalone
+- change bootstrapping in `index.ts`    
+`bootstrapApplication(AppComponent);`    
+- remove `app.module.ts`
+
+### Services and standalone components
+
+- typically 
+  
+        @Injectable({ providedIn: 'root' })
+        export class AnalyticsService {
+
+- alternative
+  - in the `providers`array of a module
+  - no `{providedIn: root}` as arg of `@Injectable()` decorator
+  - available in all components and directives, same instance over all components
+
+- alternative
+  - in the `providers` array of a component's decorator object
+  - every component gets its own instance, no shared state
+
+- new, provider's array of the app while bootstrapping
+  - in `main.ts`
+    - besides AppComponent argument create a 2nd argument that is a JS object
+      with an array of providers
+    - `bootstrapApplication(AppComponent, {providers: [AnalyticsService]});`
+
+### Routing with standalone components
+- when app component is standalone it won't work wit `<router-outlet>`
+  - because `RouterModule`isn't known here
+  - so import in app component's decorator object
+  - now the routes aren't known yet
+  - add routing module to providers in `main.ts`
+    - this is not a service but the `RouterModule.forRoot(routes)` in `app-routing.module.ts` acts like one
+    - for this to work use a helper in the `main.ts`providers array named `importProvidersFrom()`
+    
+                bootstrapApplication(AppComponent, {
+                  providers: [
+                    importProvidersFrom(AppRoutingModule)
+                  ],
+                });
+
+- **lazy loading in standalone components**
+  - loading standalone components lazily without putting them in modules
+
+            {
+              path: 'about',
+              loadComponent: () => import('./about/about.component').then((mod) => mod.AboutComponent),
+            },
+  
+  - the routes can be in a separate file with a routes constant
+  - this files just links paths to components
+        
+            export const DASHBOARD_ROUTES: Route[] = [
+              {
+                path: '',
+                component: DashboardComponent
+              },
+              {
+                path: 'today',
+                component: TodayComponent
+              },
+            ];
+
+  - then load these routes lazily in the main routing module
+  
+            {
+              path: 'dashboard',
+              loadChildren: () =>
+                  import('./dashboard/routes').then(
+                      (mod) => mod.DASHBOARD_ROUTES
+                  ),
+            },
+
+
+  - don't forget to import the `RouterModule` in the Component decorator where u need it's features eg:   
+    `<a routerLink="today">today's highlights</a>`
+
+
+  **chain of events**
+  - `main.ts` has `importProvidersFrom(AppRoutingModule)`
+  - `AppRoutingModule` contains the parent path and children with `loadChildren: ( ()=> ...)` referring to the `DASHBOARD_ROUTES`, this will ensure _lazy loading_
+  - `DASHBOARD_ROUTES` is a constant of type `Route[] `that has paths to components
+
+
 # TypeScript
 
 ### Define a model
