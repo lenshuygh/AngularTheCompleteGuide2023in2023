@@ -2654,6 +2654,139 @@ https://academind.com/tutorials/angular-q-a#how-to-fix-broken-routes-after-deplo
     `effect(() => console.log(this.counter()));`
   - any signal inside the function causes the function to be executed again
 
+# NgRx
+  - 3rd party library for state management
+  - helps with management of (app-wide) state
+  - instead of managing complex state services or components
+  - a standardized clearly defined approach
+
+
+  - works with a **_store_** for the data
+  - components read data from the store
+  - components **_listen_** to data changes with **_selectors_**
+  - components can use **_selectors_** to get state data
+  - components dispatch **_actions_** that **_reducers_** listen to when data is changes
+  - **_reducers_** are triggered and change data in the store
+  - **_effects_** are side-effects that can be triggered when **_actions_** are triggered
+
+  ### install NgRx
+  > ng add @ngrx/store
+
+  - downloads and installs library in current project
+  - adds `StoreModule.forRoot(....)` to app.module.ts   
+    `imports: [BrowserModule, StoreModule.forRoot({}, {})],`
+or
+  - adds `provideStore()` to main.ts if standalone component project
+
+            bootstrapApplication(AppComponent, {
+              providers: [provideStore()]
+            });  
+
+ ### adding data to the store
+  - to output use a **_reducer_** to set init values/data into the store
+  - create reducer, function that takes data as input and returns the update state
+     
+  > counter.reducer.ts
+
+          const initialState = 0;
+          export const counterReducer = createReducer(
+            initialState
+          );
+
+      OR (for earlier versions)
+
+          export function CounterReducer(state = initialState) {
+            return state;
+          }
+
+
+  - reducer needs and initial state, usually defined in a constant, but can also be set in the arg directly
+  - register reducer to the store by giving it a name and referring to it
+    - in `app.module.ts`
+      
+              imports: [BrowserModule, StoreModule.forRoot({
+                  counter: counterReducer
+              }, {})],
+              
+    - in `main.ts` for standalone projects
+
+              bootstrapApplication(AppComponent, {
+                providers: [provideStore({
+                  counter: CounterRucer
+                })]
+              });
+
+  ### Reading data from the store
+  - inject in the component that needs the data  
+    `constructor(private store: Store) {}`
+  - the store is globally managed
+  - add a property `count$ : Observable<number>;`
+    - decorated with `$` indicating it stores an observable, not obligated to do this but it is common
+  - in the **constructor** use `select()` on the store observable
+    
+          constructor(private store: Store<{ counter: number }>) {
+            this.count$ = store.select('counter');
+          } 
+    
+      - inject the store with a type, a key of `'counter'` and a value that's a number
+      - otherwise TS will complain about the following line of a type that's unknown
+      - the select arg is the key used in the store for the reducer   
+
+      - `select()` yields an observable that is updated on data changes in the store
+      - in the template we can use the `ASYNC` pipe to listen automatically to the observables changes  
+        `<p class="counter">{{ count$ | async}}</p>`
+
+  ### updating data in the store
+  - **actions** 
+  
+  > counter.actions.ts
+
+  - defining actions that can be dispatched
+  - with `createAction()` that has at least the type/identifier of the action
+    - by convention the identifier is a string prepended with the name of the feature of the app it belongs to in `[]` describing the action
+    - in the reducer function we're listening to the action
+      - add as 2nd argument to `createReducer()` with a helper fct `on()`
+        - `on()` takes 2 args, the action & a function that updates the state
+        - don't change the state, return a new changed state
+        
+              export const counterReducer = createReducer(
+                initialState,
+                on(increment, (currentState) => currentState + 1)
+              );
+
+  ### Dispatching the action
+  - with `dispatch()` that dispatches an action that is used as arg but as a _**function**_
+    
+              increment() {
+                this.store.dispatch(increment());
+              }
+
+      - note that increment is used as a function
+
+
+### attach data to actions
+- `createAction()` takes a 2nd argument that describes the data
+- in this we use `props()` that takes a JS object K,V that describes a key and a type of data
+    
+          export const increment = createAction(
+            '[counter] Increment',
+            props<{ value: number }>()
+          );
+
+- use the action as
+  - add to the _reducer_ and use the value with a property that is the 
+    key in the action ('value' in this case)
+  
+            export const counterReducer = createReducer(
+              initialState,
+              on(increment, (currentState, action) => currentState + action.value)
+            );
+      
+  - the value of the data is set in `dispatch()` with again an object with that key and a value  
+    `this.store.dispatch(increment({value: 5}));`
+
+
+
 # TypeScript
 
 ### Define a model
@@ -2734,6 +2867,14 @@ the shortcut way to do this in TypeScript is
       - `this.ingredients.push(...newIngredientsToBeAdded);`
         - by prefacing the array with `...` it will be converted into multiple values
           this wya the new elements will be pushed onto it as a single value each instead of an array
+
+  - function default values
+    
+          export function CounterReducer(state = initialState) {
+            return initialState;
+          }
+  
+    - `initialState` is the default value for `state` if no arg is passed along when calling the function
 
 # Debugging in Chrome
 
