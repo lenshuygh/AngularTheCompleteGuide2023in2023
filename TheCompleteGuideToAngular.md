@@ -2570,6 +2570,89 @@ https://academind.com/tutorials/angular-q-a#how-to-fix-broken-routes-after-deplo
   - `AppRoutingModule` contains the parent path and children with `loadChildren: ( ()=> ...)` referring to the `DASHBOARD_ROUTES`, this will ensure _lazy loading_
   - `DASHBOARD_ROUTES` is a constant of type `Route[] `that has paths to components
 
+# Angular Signals
+  - an Angular way of handling data changes and-or updating the UI
+    - **before**:
+      - Classic Change Detection (Zone-Based Change Detection)
+      - Changes are detected automatically
+      - uses Zone.js lib for this
+      - downsides
+        - performance
+        - increased bundle size
+    - **Signals** 
+      - no auto change detection -> dev's TELL angular
+        - when data changes
+        - where the data is used
+      - UI updates only the UI parts with data changes
+      - upsides
+        - full control
+        - increased performance
+        - smaller bundle size
+      - downside
+        - takes slightly more work
+
+### usage
+- just assign `signal()` to the property
+  - it is a wrapper around data that needs to be monitored
+  - set an initial value to the prop by passing it into the signal  
+    `counter= signal(0);`  
+    or    
+    `actions= signal<string[]>([]);`
+  
+
+  - to update a value that is a signal
+    - use a method
+    - there's 3 methods for this
+      
+      - `set()` doesn't take a function, just a value
+        - there's access to the previous value by calling the signal as a function   
+          `this.counter.set(this.counter() + 1);`
+
+      - `update( () => {} )` works with the previous value, needs to return new value
+                
+                      this.counter.update((oldCounter) => {
+                          return oldCounter + 1;
+                      });
+      
+      - `mutate(() => {} )` works with the previous value
+        - an updating method for values the can be mutated
+              
+                      this.actions.mutate(
+                        (oldActions) => {
+                            oldActions.push('INCREMENT');
+                        }
+                      );
+      
+        - without `mutate()` a mutable datastructure would be updated as:
+        
+                      this.actions.update((oldActions) =>
+                          [...oldActions, 'DECREMENT']
+                      );
+
+          - `push()` can't be used here because it doesn't return the changed array, just the new length and it need to return the new value
+          - in template `<li *ngFor="let action of actions()">{{ action }}</li>`
+
+- to output a signal value
+    - need to be executed as a function  
+      `<p id="counter-output">Counter: {{ counter() }}</p>`
+
+### computed values
+
+  - values depending on other signals that are updated when the signal value changes
+    
+          doubleCounter = computed(() =>
+            this.counter() * 2
+          );
+
+  - to get the value use as function  
+    `<p id="counter-output">Counter: {{ doubleCounter() }}</p>`
+
+### effects
+
+  - takes a function as a value
+  - intended to run code when signals change  
+    `effect(() => console.log(this.counter()));`
+  - any signal inside the function causes the function to be executed again
 
 # TypeScript
 
